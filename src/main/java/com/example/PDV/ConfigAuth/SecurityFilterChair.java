@@ -30,6 +30,13 @@ public class SecurityFilterChair extends OncePerRequestFilter {
     }
 
     @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+
+        String path = request.getServletPath();
+        return path.equals("/user/login") || path.equals("/user/refresh");
+    }
+
+    @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
@@ -38,23 +45,30 @@ public class SecurityFilterChair extends OncePerRequestFilter {
 
         if (token != null) {
 
-            var subject = tokenService.validationToken(token);
+            try {
 
-            UserEntity user = userRepository.findByName(subject)
-                    .orElseThrow(UserNotFound::new);
+                var subject = tokenService.validationToken(token);
 
-            CustomUserDetails userDetails = new CustomUserDetails(user.getId(),
-                    user.getName(), user.getPassword());
+                UserEntity user = userRepository.findByName(subject)
+                        .orElseThrow(UserNotFound::new);
 
-            var authentication = new UsernamePasswordAuthenticationToken(userDetails,
-                    null, userDetails.getAuthorities());
+                CustomUserDetails userDetails = new CustomUserDetails(user.getId(),
+                        user.getName(), user.getPassword());
 
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+                var authentication = new UsernamePasswordAuthenticationToken(userDetails,
+                        null, userDetails.getAuthorities());
+
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            }catch (Exception e) {
+                SecurityContextHolder.clearContext();
+            }
         }
 
         filterChain.doFilter(request, response);
 
     }
+
 
     private String recoverToken(HttpServletRequest request) {
         var authHeader = request.getHeader("Authorization");

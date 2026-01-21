@@ -2,13 +2,13 @@ package com.example.PDV.UsersCore.UserDtos;
 
 public class Refresh {
 
-    private String token;
+    private String tokenRefresh;
 
-    public String getToken() {
-        return token;
+    public String getTokenRefresh() {
+        return tokenRefresh;
     }
 
-    public void setToken(String token) {
-        this.token = token;
+    public void setTokenRefresh(String tokenRefresh) {
+        this.tokenRefresh = tokenRefresh;
     }
 }

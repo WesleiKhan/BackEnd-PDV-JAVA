@@ -25,6 +25,14 @@ public class BoxController {
                 "sucesso!");
     }
 
+    @GetMapping("/opened")
+    public ResponseEntity<BoxEntity> getBoxOpened() {
+
+        BoxEntity box = boxService.BoxOpened();
+
+        return ResponseEntity.ok().body(box);
+    }
+
     @PostMapping("/finish/{id}")
     public ResponseEntity<String> finishBox(@PathVariable Integer id) {
 

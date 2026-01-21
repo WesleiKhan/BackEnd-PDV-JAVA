@@ -1,5 +1,6 @@
 package com.example.PDV.BoxCore;
 
+import com.example.PDV.BoxCore.BoxEnums.StatusBox;
 import com.example.PDV.UsersCore.UserEntity;
 import jakarta.persistence.*;
 
@@ -27,6 +28,9 @@ public class BoxEntity {
     @ManyToOne
     @JoinColumn(name = "operator_id")
     private UserEntity operator;
+
+    @Enumerated(EnumType.STRING)
+    private StatusBox status_of_box = StatusBox.OPEN;
 
     @PrePersist
     public void prePersist() {
@@ -87,4 +91,11 @@ public class BoxEntity {
         }
     }
 
+    public StatusBox getStatus_of_box() {
+        return status_of_box;
+    }
+
+    public void setStatus_of_box(StatusBox status_of_box) {
+        this.status_of_box = status_of_box;
+    }
 }

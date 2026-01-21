@@ -91,11 +91,12 @@ public class UserController {
     @PostMapping("/refresh")
     public ResponseEntity<LoginOutDto> refresh(@RequestBody Refresh refresh) {
 
-        String name = tokenService.validationToken(refresh.getToken());
+        String name = tokenService.validationToken(refresh.getTokenRefresh());
         var user = userDetailsService.loadUserByUsername(name);
 
         String newAccess = tokenService.generateRefreshToken((CustomUserDetails) user);
 
-        return ResponseEntity.ok().body(new LoginOutDto(newAccess, refresh.getToken()));
+        return ResponseEntity.ok().body(new LoginOutDto(newAccess,
+                refresh.getTokenRefresh()));
     }
 }

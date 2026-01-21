@@ -1,10 +1,12 @@
 package com.example.PDV.BoxCore;
 
 import com.example.PDV.BoxCore.BoxDtos.BoxEntryDto;
+import com.example.PDV.BoxCore.BoxEnums.StatusBox;
 import com.example.PDV.Exceptions.BoxNotFound;
 import com.example.PDV.Exceptions.UserNotFound;
 import com.example.PDV.UsersCore.UserEntity;
 import com.example.PDV.UsersCore.UserRepository;
+import com.example.PDV.UsersCore.UserService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -16,10 +18,15 @@ public class BoxService {
 
     private final UserRepository userRepository;
 
-    public BoxService(BoxRepository boxRepository, UserRepository userRepository) {
+    private final UserService userService;
+
+    public BoxService(BoxRepository boxRepository,
+                      UserRepository userRepository,
+                      UserService userService) {
 
         this.boxRepository = boxRepository;
         this.userRepository = userRepository;
+        this.userService = userService;
     }
 
     public void startBox(BoxEntryDto boxEntry) {
@@ -32,13 +39,23 @@ public class BoxService {
         boxRepository.save(box);
     }
 
+    public BoxEntity BoxOpened() {
+
+        UserEntity operator = userService.loggedInUser();
+
+        return boxRepository.findByStatus(operator, StatusBox.OPEN)
+                .orElseThrow(BoxNotFound::new);
+    }
+
     public void finishBox(Integer boxId) {
 
         BoxEntity newBox = boxRepository.findById(boxId)
                 .orElseThrow(BoxNotFound::new);
 
         newBox.setEndDate(LocalDateTime.now());
+        newBox.setStatus_of_box(StatusBox.CLOSE);
 
         boxRepository.save(newBox);
     }
+
 }
