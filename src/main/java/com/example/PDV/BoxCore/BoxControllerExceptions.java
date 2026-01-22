@@ -1,6 +1,7 @@
 package com.example.PDV.BoxCore;
 
 import com.example.PDV.Exceptions.BoxNotFound;
+import com.example.PDV.Exceptions.OperatorAlreadyBoxOpened;
 import com.example.PDV.Exceptions.UserNotFound;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,5 +33,14 @@ public class BoxControllerExceptions extends ResponseEntityExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(erroApi.get("message"));
+    }
+
+    @ExceptionHandler(OperatorAlreadyBoxOpened.class)
+    private ResponseEntity<String> HandlerOperatorAlreadyBoxOpened(OperatorAlreadyBoxOpened message) {
+
+        Map<String, String> erroApi = new HashMap<>();
+        erroApi.put("message", message.getMessage());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(erroApi.get("message"));
     }
 }

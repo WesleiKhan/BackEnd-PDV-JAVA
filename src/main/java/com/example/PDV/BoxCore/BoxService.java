@@ -3,6 +3,7 @@ package com.example.PDV.BoxCore;
 import com.example.PDV.BoxCore.BoxDtos.BoxEntryDto;
 import com.example.PDV.BoxCore.BoxEnums.StatusBox;
 import com.example.PDV.Exceptions.BoxNotFound;
+import com.example.PDV.Exceptions.OperatorAlreadyBoxOpened;
 import com.example.PDV.Exceptions.UserNotFound;
 import com.example.PDV.UsersCore.UserEntity;
 import com.example.PDV.UsersCore.UserRepository;
@@ -34,6 +35,9 @@ public class BoxService {
         UserEntity operator = userRepository.findById(boxEntry.getIdOperator())
                 .orElseThrow(UserNotFound::new);
 
+        if (boxRepository.findByStatus(operator, StatusBox.OPEN).isPresent())
+            throw new OperatorAlreadyBoxOpened();
+
         BoxEntity box = new BoxEntity(operator);
 
         boxRepository.save(box);
@@ -57,5 +61,6 @@ public class BoxService {
 
         boxRepository.save(newBox);
     }
+
 
 }
