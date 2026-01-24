@@ -1,6 +1,7 @@
 package com.example.PDV.BoxCore;
 
 import com.example.PDV.BoxCore.BoxDtos.BoxEntryDto;
+import com.example.PDV.BoxCore.BoxDtos.BoxOpenedOutDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,9 +27,9 @@ public class BoxController {
     }
 
     @GetMapping("/opened")
-    public ResponseEntity<BoxEntity> getBoxOpened() {
+    public ResponseEntity<BoxOpenedOutDto> getBoxOpened() {
 
-        BoxEntity box = boxService.BoxOpened();
+        BoxOpenedOutDto box = boxService.BoxOpened();
 
         return ResponseEntity.ok().body(box);
     }

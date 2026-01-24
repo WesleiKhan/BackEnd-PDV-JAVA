@@ -18,11 +18,8 @@ public class SaleController {
         this.saleService = saleService;
     }
 
-    @PostMapping("/make/{id}")
-    public ResponseEntity<String> makeSale(@RequestBody SaleEntryDto saleEntry,
-                                             @PathVariable Integer id) {
-
-        saleEntry.setBoxId(id);
+    @PostMapping("/make")
+    public ResponseEntity<String> makeSale(@RequestBody SaleEntryDto saleEntry) {
 
         saleService.makeSale(saleEntry);
 
