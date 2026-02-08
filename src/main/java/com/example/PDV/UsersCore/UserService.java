@@ -64,4 +64,14 @@ public class UserService {
                 .orElseThrow(UserNotFound::new);
 
     }
+
+    public static Integer currentUserId() {
+
+        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder
+                        .getContext()
+                        .getAuthentication()
+                        .getPrincipal();
+
+        return userDetails.getId();
+    }
 }

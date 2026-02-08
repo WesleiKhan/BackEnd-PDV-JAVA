@@ -4,12 +4,13 @@ import com.example.PDV.BoxCore.BoxEnums.StatusBox;
 import com.example.PDV.UsersCore.UserEntity;
 import jakarta.persistence.*;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "Box")
-public class BoxEntity {
+public class BoxEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

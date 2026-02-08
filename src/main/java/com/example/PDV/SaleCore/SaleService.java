@@ -2,6 +2,7 @@ package com.example.PDV.SaleCore;
 
 import com.example.PDV.BoxCore.BoxEntity;
 import com.example.PDV.BoxCore.BoxRepository;
+import com.example.PDV.BoxCore.BoxService;
 import com.example.PDV.Exceptions.BoxNotFound;
 import com.example.PDV.Exceptions.PriceIsNotEqual;
 import com.example.PDV.Exceptions.ProductNotFound;
@@ -34,17 +35,21 @@ public class SaleService {
 
     private final BoxRepository boxRepository;
 
+    private final BoxService boxService;
+
     private final ProductRepository productRepository;
 
     public SaleService(ItemsForSaleRepository itemsForSaleRepository,
                        SaleRepository saleRepository,
                        BoxRepository boxRepository,
+                       BoxService boxService,
                        PaymentOfSaleRepository paymentOfSaleRepository,
                        ProductRepository productRepository) {
 
         this.itemsForSaleRepository = itemsForSaleRepository;
         this.saleRepository = saleRepository;
         this.paymentOfSaleRepository = paymentOfSaleRepository;
+        this.boxService = boxService;
         this.boxRepository = boxRepository;
         this.productRepository = productRepository;
     }
@@ -105,6 +110,8 @@ public class SaleService {
 
         box.setTotalValue(valueTotal);
         boxRepository.save(box);
+
+        boxService.evictCacheBoxOpenedForCurrentUser();
 
         itemsForSaleRepository.saveAll(sales);
 

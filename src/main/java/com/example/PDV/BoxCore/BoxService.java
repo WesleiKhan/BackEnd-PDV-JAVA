@@ -12,6 +12,8 @@ import com.example.PDV.SaleCore.SaleEnums.KindOfPayment;
 import com.example.PDV.UsersCore.UserEntity;
 import com.example.PDV.UsersCore.UserRepository;
 import com.example.PDV.UsersCore.UserService;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -55,6 +57,10 @@ public class BoxService {
         boxRepository.save(box);
     }
 
+    @Cacheable(
+            value = "box_opened",
+            key = "#root.methodName + '-' + T(com.example.PDV.UsersCore.UserService).currentUserId()"
+    )
     public BoxOpenedOutDto BoxOpened() {
 
         UserEntity operator = userService.loggedInUser();
@@ -75,6 +81,10 @@ public class BoxService {
         return new BoxOpenedOutDto(box, payments);
     }
 
+    @CacheEvict(
+            value = "box_opened",
+            key = "'BoxOpened-' + T(com.example.PDV.UsersCore.UserService).currentUserId()"
+    )
     public void finishBox(Integer boxId) {
 
         BoxEntity newBox = boxRepository.findById(boxId)
@@ -84,6 +94,14 @@ public class BoxService {
         newBox.setStatus_of_box(StatusBox.CLOSE);
 
         boxRepository.save(newBox);
+    }
+
+    @CacheEvict(
+            value = "box_opened",
+            key = "'BoxOpened-' + T(com.example.PDV.UsersCore.UserService).currentUserId()"
+    )
+    public void evictCacheBoxOpenedForCurrentUser() {
+        // só para evict, nada dentro
     }
 
 
