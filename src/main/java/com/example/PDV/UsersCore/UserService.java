@@ -1,6 +1,6 @@
 package com.example.PDV.UsersCore;
 
-import com.example.PDV.ConfigAuth.CustomUserDetails;
+import com.example.PDV.Config.ConfigAuth.CustomUserDetails;
 import com.example.PDV.Exceptions.UserNotFound;
 import com.example.PDV.UsersCore.UserDtos.UserEntryDto;
 import com.example.PDV.UsersCore.UserDtos.UserOutDto;

@@ -1,7 +1,7 @@
 package com.example.PDV.UsersCore;
 
-import com.example.PDV.ConfigAuth.CustomUserDetails;
-import com.example.PDV.ConfigAuth.TokenService;
+import com.example.PDV.Config.ConfigAuth.CustomUserDetails;
+import com.example.PDV.Config.ConfigAuth.TokenService;
 import com.example.PDV.UsersCore.UserDtos.LoginOutDto;
 import com.example.PDV.UsersCore.UserDtos.Refresh;
 import com.example.PDV.UsersCore.UserDtos.UserEntryDto;

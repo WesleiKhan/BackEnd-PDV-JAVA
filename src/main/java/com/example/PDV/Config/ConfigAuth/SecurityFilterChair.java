@@ -1,4 +1,4 @@
-package com.example.PDV.ConfigAuth;
+package com.example.PDV.Config.ConfigAuth;
 
 import com.example.PDV.Exceptions.UserNotFound;
 import com.example.PDV.UsersCore.UserEntity;

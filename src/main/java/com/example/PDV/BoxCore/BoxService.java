@@ -59,7 +59,7 @@ public class BoxService {
 
     @Cacheable(
             value = "box_opened",
-            key = "#root.methodName + '-' + T(com.example.PDV.UsersCore.UserService).currentUserId()"
+            key = "'box_opened_user_' + T(com.example.PDV.UsersCore.UserService).currentUserId()"
     )
     public BoxOpenedOutDto BoxOpened() {
 
@@ -78,12 +78,15 @@ public class BoxService {
             payments.put(r.getKindOfPayment(), r.getTotal());
         }
 
-        return new BoxOpenedOutDto(box, payments);
+        System.out.println(box);
+
+        return new BoxOpenedOutDto(box.getId(), box.getStartDate(),
+                box.getOperator().getName(), box.getTotalValue(), payments);
     }
 
     @CacheEvict(
             value = "box_opened",
-            key = "'BoxOpened-' + T(com.example.PDV.UsersCore.UserService).currentUserId()"
+            key = "'box_opened_user_' + T(com.example.PDV.UsersCore.UserService).currentUserId()"
     )
     public void finishBox(Integer boxId) {
 
@@ -98,7 +101,7 @@ public class BoxService {
 
     @CacheEvict(
             value = "box_opened",
-            key = "'BoxOpened-' + T(com.example.PDV.UsersCore.UserService).currentUserId()"
+            key = "'box_opened_user_' + T(com.example.PDV.UsersCore.UserService).currentUserId()"
     )
     public void evictCacheBoxOpenedForCurrentUser() {
         // só para evict, nada dentro

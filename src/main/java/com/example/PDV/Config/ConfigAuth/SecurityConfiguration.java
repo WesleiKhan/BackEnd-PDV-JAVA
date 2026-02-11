@@ -1,4 +1,4 @@
-package com.example.PDV.ConfigAuth;
+package com.example.PDV.Config.ConfigAuth;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
