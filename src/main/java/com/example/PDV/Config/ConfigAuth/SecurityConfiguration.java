@@ -65,16 +65,23 @@ public class SecurityConfiguration {
 
         CorsConfiguration config = new CorsConfiguration();
 
-        config.setAllowedOrigins(
-                List.of("http://localhost:3000")
+        config.setAllowedOriginPatterns(
+               List.of(
+                        "http://localhost:3000",
+                        "http://192.168.*:*"
+                )
         );
 
         config.setAllowedMethods(
-                List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")
+               List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")
         );
 
         config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         config.setAllowCredentials(true);
+
+        config.setAllowedOriginPatterns(List.of("*"));
+
+
 
         UrlBasedCorsConfigurationSource source =
                 new UrlBasedCorsConfigurationSource();
