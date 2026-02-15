@@ -7,9 +7,11 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -22,11 +24,15 @@ public class SecurityFilterChair extends OncePerRequestFilter {
 
     private final UserRepository userRepository;
 
+    private final AuthorizationService authorizationService;
+
     public SecurityFilterChair(TokenService tokenService,
-                               UserRepository userRepository) {
+                               UserRepository userRepository,
+                               AuthorizationService authorizationService) {
 
         this.tokenService = tokenService;
         this.userRepository = userRepository;
+        this.authorizationService = authorizationService;
     }
 
     @Override
@@ -49,11 +55,8 @@ public class SecurityFilterChair extends OncePerRequestFilter {
 
                 var subject = tokenService.validationToken(token);
 
-                UserEntity user = userRepository.findByName(subject)
-                        .orElseThrow(UserNotFound::new);
-
-                CustomUserDetails userDetails = new CustomUserDetails(user.getId(),
-                        user.getName(), user.getPassword());
+                UserDetails userDetails =
+                         authorizationService.loadUserByUsername(subject);
 
                 var authentication = new UsernamePasswordAuthenticationToken(userDetails,
                         null, userDetails.getAuthorities());
@@ -68,6 +71,7 @@ public class SecurityFilterChair extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
 
     }
+
 
 
     private String recoverToken(HttpServletRequest request) {

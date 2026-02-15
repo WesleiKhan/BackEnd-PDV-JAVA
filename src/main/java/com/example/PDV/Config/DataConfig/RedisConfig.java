@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -21,6 +22,7 @@ import java.util.Map;
 public class RedisConfig {
 
     @Bean
+    @Primary
     public RedisCacheManager cacheManager(RedisConnectionFactory redisConnectionFactory) {
 
         ObjectMapper mapper = JsonMapper.builder()
