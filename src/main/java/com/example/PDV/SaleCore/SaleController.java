@@ -1,5 +1,6 @@
 package com.example.PDV.SaleCore;
 
+import com.example.PDV.SaleCore.SaleDtos.InfoOfProductsSaleDto;
 import com.example.PDV.SaleCore.SaleDtos.SaleEntryDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,5 +33,33 @@ public class SaleController {
         saleService.cancelSele(id);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @PostMapping("/info/products")
+    public ResponseEntity<String> toWriteProductsInRedis(@RequestBody InfoOfProductsSaleDto info) {
+
+        InfoOfProductsSaleDto infoProducts =
+                saleService.toWriteInfosInDataRedisOfProductsSale(info);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body("Objeto " +
+                "Adicionado no Redis");
+    }
+
+    @GetMapping("/info/products")
+    public ResponseEntity<InfoOfProductsSaleDto> getInfoProductsOfSaleFromRedis() {
+
+        InfoOfProductsSaleDto info =
+                saleService.readInfosInDataRedisOfProductsSale();
+
+        return ResponseEntity.status(HttpStatus.OK).body(info);
+    }
+
+    @DeleteMapping("/info/products")
+    public ResponseEntity<String> deleteProductsInRedis() {
+
+        saleService.evictCacheInfosInDataRedisOfProductsSale();
+
+        return ResponseEntity.status(HttpStatus.CREATED).body("Objeto " +
+                "Deletado no Redis");
     }
 }

@@ -15,8 +15,12 @@ import com.example.PDV.SaleCore.Entities.SaleEntity;
 import com.example.PDV.SaleCore.Repositories.ItemsForSaleRepository;
 import com.example.PDV.SaleCore.Repositories.PaymentOfSaleRepository;
 import com.example.PDV.SaleCore.Repositories.SaleRepository;
+import com.example.PDV.SaleCore.SaleDtos.InfoOfProductsSaleDto;
 import com.example.PDV.SaleCore.SaleDtos.SaleEntryDto;
 import com.example.PDV.SaleCore.SaleEnums.KindOfPayment;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -115,6 +119,8 @@ public class SaleService {
 
         itemsForSaleRepository.saveAll(sales);
 
+        evictCacheInfosInDataRedisOfProductsSale();
+
     }
 
     public void cancelSele(Integer saleId) {
@@ -123,6 +129,31 @@ public class SaleService {
                 .orElseThrow(SaleNotFound::new);
 
         itemsForSaleRepository.delete(sale);
+    }
+
+    @CachePut(
+            value = "Info_Of_Products_Sale",
+            key = "'Info_Of_Products_Sale_user_' + T(com.example.PDV.UsersCore.UserService).currentUserId()"
+    )
+    public InfoOfProductsSaleDto toWriteInfosInDataRedisOfProductsSale (InfoOfProductsSaleDto info) {
+        return info;
+    }
+
+    @Cacheable(
+            value = "Info_Of_Products_Sale",
+            key = "'Info_Of_Products_Sale_user_' + T(com.example.PDV.UsersCore.UserService).currentUserId()",
+            unless = "#result == null"
+    )
+    public InfoOfProductsSaleDto readInfosInDataRedisOfProductsSale () {
+        return null;
+    }
+
+    @CacheEvict(
+            value = "Info_Of_Products_Sale",
+            key = "'Info_Of_Products_Sale_user_' + T(com.example.PDV.UsersCore.UserService).currentUserId()"
+    )
+    public void evictCacheInfosInDataRedisOfProductsSale () {
+
     }
 
 }
