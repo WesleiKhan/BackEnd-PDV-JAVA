@@ -23,6 +23,7 @@ public class SaleController {
     public ResponseEntity<String> makeSale(@RequestBody SaleEntryDto saleEntry) {
 
         saleService.makeSale(saleEntry);
+        saleService.evictCacheInfosInDataRedisOfProductsSale();
 
         return ResponseEntity.status(HttpStatus.CREATED).body("Venda realizada");
     }

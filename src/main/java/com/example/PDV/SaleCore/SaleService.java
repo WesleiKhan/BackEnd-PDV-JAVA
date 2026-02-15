@@ -9,6 +9,7 @@ import com.example.PDV.Exceptions.ProductNotFound;
 import com.example.PDV.Exceptions.SaleNotFound;
 import com.example.PDV.ProductsCore.ProductEntity;
 import com.example.PDV.ProductsCore.ProductRepository;
+import com.example.PDV.ProductsCore.ProductService;
 import com.example.PDV.SaleCore.Entities.ItemsForSaleEntity;
 import com.example.PDV.SaleCore.Entities.PaymentOfSaleEntity;
 import com.example.PDV.SaleCore.Entities.SaleEntity;
@@ -43,12 +44,15 @@ public class SaleService {
 
     private final ProductRepository productRepository;
 
+    private final ProductService productService;
+
     public SaleService(ItemsForSaleRepository itemsForSaleRepository,
                        SaleRepository saleRepository,
                        BoxRepository boxRepository,
                        BoxService boxService,
                        PaymentOfSaleRepository paymentOfSaleRepository,
-                       ProductRepository productRepository) {
+                       ProductRepository productRepository,
+                       ProductService productService) {
 
         this.itemsForSaleRepository = itemsForSaleRepository;
         this.saleRepository = saleRepository;
@@ -56,6 +60,7 @@ public class SaleService {
         this.boxService = boxService;
         this.boxRepository = boxRepository;
         this.productRepository = productRepository;
+        this.productService = productService;
     }
 
     public void makeSale(SaleEntryDto saleEntry) {
@@ -85,6 +90,8 @@ public class SaleService {
             valueTotal = valueTotal.add(product.getValue());
 
             quantity++;
+
+            product.decreaseQuantity(1);
 
             sales.add(items);
         }
@@ -119,7 +126,7 @@ public class SaleService {
 
         itemsForSaleRepository.saveAll(sales);
 
-        evictCacheInfosInDataRedisOfProductsSale();
+        productService.evichProducts();
 
     }
 
@@ -153,7 +160,7 @@ public class SaleService {
             key = "'Info_Of_Products_Sale_user_' + T(com.example.PDV.UsersCore.UserService).currentUserId()"
     )
     public void evictCacheInfosInDataRedisOfProductsSale () {
-
+        // só para evict, nada dentro
     }
 
 }
