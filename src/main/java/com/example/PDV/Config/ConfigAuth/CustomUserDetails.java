@@ -3,16 +3,19 @@ package com.example.PDV.Config.ConfigAuth;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
-public class CustomUserDetails implements UserDetails {
+public class CustomUserDetails implements UserDetails, Serializable {
 
     private final Integer id;
 
     private final String name;
 
     private final String password;
+
+    private final List<GrantedAuthority> authorities = List.of();
 
     public CustomUserDetails(Integer id, String name, String password) {
 
