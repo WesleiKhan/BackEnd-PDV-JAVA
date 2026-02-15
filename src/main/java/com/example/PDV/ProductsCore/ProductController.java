@@ -1,6 +1,7 @@
 package com.example.PDV.ProductsCore;
 
 import com.example.PDV.ProductsCore.ProductDtos.ProductEntryDto;
+import com.example.PDV.ProductsCore.ProductDtos.ProductsDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,9 +30,9 @@ public class ProductController {
     }
 
     @GetMapping("/products")
-    public ResponseEntity<List<ProductEntity>> getProducts() {
+    public ResponseEntity<List<ProductsDto>> getProducts() {
 
-        List<ProductEntity> products = productService.seeProducts();
+        List<ProductsDto> products = productService.seeProducts();
 
         return ResponseEntity.ok().body(products);
     }

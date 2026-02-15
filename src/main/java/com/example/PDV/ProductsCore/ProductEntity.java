@@ -60,6 +60,12 @@ public class ProductEntity {
         this.quantity = quantity;
     }
 
+    public void decreaseQuantity(Integer value) {
+        if (this.quantity != null && value != null) {
+            this.quantity = this.quantity - value;
+        }
+    }
+
     public BigDecimal getValue() {
         return value;
     }
