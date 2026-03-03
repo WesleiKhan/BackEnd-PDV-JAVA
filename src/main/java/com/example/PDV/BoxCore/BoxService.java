@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -72,7 +73,7 @@ public class BoxService {
                 paymentOfSaleRepository.summaryOfKind(box.getId());
 
         Map<KindOfPayment, BigDecimal> payments =
-                new EnumMap<>(KindOfPayment.class);
+                new HashMap<>();
 
         for (PaymentSummary r : summary) {
             payments.put(r.getKindOfPayment(), r.getTotal());

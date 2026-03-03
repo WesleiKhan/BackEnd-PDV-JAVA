@@ -8,9 +8,9 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Map;
 
-public record BoxOpenedOutDto(Integer id,
+public record BoxOpenedOutDto (Integer id,
                               LocalDateTime startDate,
                               String operator,
                               BigDecimal totalValue,
-                              Map<KindOfPayment,BigDecimal> payments) implements Serializable {
+                              Map<KindOfPayment, BigDecimal> payments) implements Serializable {
 }
