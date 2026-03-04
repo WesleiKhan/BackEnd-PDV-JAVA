@@ -24,6 +24,8 @@ public class ProductController {
 
         productService.createProduct(entry);
 
+        productService.evichProducts();
+
         return ResponseEntity.status(HttpStatus.CREATED).body("Produto Registrado " +
                 "com " +
                 "sucesso!");
@@ -43,6 +45,8 @@ public class ProductController {
 
         productService.updateProduct(entry, id);
 
+        productService.evichProducts();
+
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
@@ -50,6 +54,8 @@ public class ProductController {
     ResponseEntity<String> deleteProdutct(@PathVariable Integer id) {
 
         productService.deleteProduct(id);
+
+        productService.evichProducts();
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
