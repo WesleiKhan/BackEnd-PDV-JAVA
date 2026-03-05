@@ -1,5 +1,6 @@
 package com.example.PDV.UsersCore;
 
+import com.example.PDV.UsersCore.Enums.Roles;
 import com.example.PDV.UsersCore.UserDtos.UserEntryDto;
 import jakarta.persistence.*;
 
@@ -19,6 +20,10 @@ public class UserEntity {
     @Column(name = "password")
     private String password;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role")
+    private Roles role;
+
     public UserEntity() {
 
     }
@@ -26,10 +31,12 @@ public class UserEntity {
     public UserEntity(UserEntryDto user) {
 
         if (user.getName() != null && !user.getName().trim().isEmpty()
-                && user.getPassword() != null && !user.getPassword().trim().isEmpty()) {
+                && user.getPassword() != null && !user.getPassword().trim().isEmpty()
+        && user.getRole() != null) {
 
             this.name = user.getName();
             this.password = user.getPassword();
+            this.role = user.getRole();
         }
     }
 
@@ -60,5 +67,17 @@ public class UserEntity {
         if (user.getPassword() != null && !user.getPassword().trim().isEmpty()) {
             this.password = user.getPassword();
         }
+
+        if (user.getRole() !=null) {
+            this.role = user.getRole();
+        }
+    }
+
+    public Roles getRole() {
+        return role;
+    }
+
+    public void setRole(Roles role) {
+        this.role = role;
     }
 }

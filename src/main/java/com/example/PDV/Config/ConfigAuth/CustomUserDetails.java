@@ -1,7 +1,10 @@
 package com.example.PDV.Config.ConfigAuth;
 
+import com.example.PDV.UsersCore.Enums.Roles;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serializable;
@@ -16,25 +19,36 @@ import java.util.List;
 })
 public class CustomUserDetails implements UserDetails, Serializable {
 
-    private final Integer id;
+    private Integer id;
 
-    private final String username;
+    private  String username;
 
-    private final String password;
+    private  String password;
 
-    private final List<GrantedAuthority> authorities = List.of();
+    private  String role;
 
-    public CustomUserDetails(Integer id, String username, String password) {
+    public CustomUserDetails() {
+
+    }
+
+    public CustomUserDetails(Integer id, String username, String password,
+                             String role) {
 
         this.id = id;
         this.username = username;
         this.password = password;
+        this.role = role;
     }
 
     @Override
+    @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        return List.of(new SimpleGrantedAuthority(role));
     }
+
+    public String getRole() { return role; }
+
+    public void setRole(String role) { this.role = role; }
 
     @Override
     public String getPassword() {

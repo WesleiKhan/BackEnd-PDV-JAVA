@@ -37,9 +37,12 @@ public class AuthorizationService implements UserDetailsService {
                         "cadastrado, por favor realize o cadastro antes de " +
                         "tentar o login novamnete!"));
 
+        System.out.println("ROLE: " + user.getRole());
+
         return new CustomUserDetails(user.getId(),
                 user.getName(),
-                user.getPassword());
+                user.getPassword(),
+                user.getRole().name());
 
     }
 }

@@ -64,6 +64,7 @@ public class SecurityFilterChair extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
             }catch (Exception e) {
+                e.printStackTrace();
                 SecurityContextHolder.clearContext();
             }
         }

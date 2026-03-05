@@ -1,4 +1,6 @@
 package com.example.PDV.UsersCore.UserDtos;
 
-public record UserOutDto(Integer id, String name) {
+import com.example.PDV.UsersCore.Enums.Roles;
+
+public record UserOutDto(Integer id, String name, Roles role) {
 }
