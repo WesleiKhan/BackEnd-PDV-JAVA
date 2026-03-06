@@ -8,6 +8,7 @@ import com.example.PDV.UsersCore.UserDtos.UserEntryDto;
 import com.example.PDV.UsersCore.UserDtos.UserOutDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -39,6 +40,7 @@ public class UserController {
     }
 
     @PostMapping("/create")
+    @PreAuthorize("hasAuthority('ROLE_MANAGER')")
     public ResponseEntity<String> createUser(@RequestBody UserEntryDto user) {
 
         userService.createUser(user);
@@ -48,6 +50,7 @@ public class UserController {
     }
 
     @PutMapping("/update/{id}")
+    @PreAuthorize("hasAuthority('ROLE_MANAGER')")
     public ResponseEntity<Void> updateUser(@RequestBody UserEntryDto user,
                                              @PathVariable Integer id) {
 
@@ -65,6 +68,7 @@ public class UserController {
     }
 
     @DeleteMapping("/delete/{id}")
+    @PreAuthorize("hasAuthority('ROLE_MANAGER')")
     public ResponseEntity<String> deleteUser(@PathVariable Integer id) {
 
         userService.deleteUser(id);
