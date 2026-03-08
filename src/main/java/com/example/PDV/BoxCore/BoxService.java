@@ -9,16 +9,15 @@ import com.example.PDV.Exceptions.UserNotFound;
 import com.example.PDV.SaleCore.Repositories.PaymentOfSaleRepository;
 import com.example.PDV.SaleCore.SaleDtos.PaymentSummary;
 import com.example.PDV.SaleCore.SaleEnums.KindOfPayment;
-import com.example.PDV.UsersCore.UserEntity;
-import com.example.PDV.UsersCore.UserRepository;
-import com.example.PDV.UsersCore.UserService;
+import com.example.PDV.EmployeeCore.EmployeeEntity;
+import com.example.PDV.EmployeeCore.EmployeeRepository;
+import com.example.PDV.EmployeeCore.EmployeeService;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,26 +27,26 @@ public class BoxService {
 
     private final BoxRepository boxRepository;
 
-    private final UserRepository userRepository;
+    private final EmployeeRepository employeeRepository;
 
-    private final UserService userService;
+    private final EmployeeService employeeService;
 
     private final PaymentOfSaleRepository paymentOfSaleRepository;
 
     public BoxService(BoxRepository boxRepository,
-                      UserRepository userRepository,
-                      UserService userService,
+                      EmployeeRepository employeeRepository,
+                      EmployeeService employeeService,
                       PaymentOfSaleRepository paymentOfSaleRepository) {
 
         this.boxRepository = boxRepository;
-        this.userRepository = userRepository;
-        this.userService = userService;
+        this.employeeRepository = employeeRepository;
+        this.employeeService = employeeService;
         this.paymentOfSaleRepository = paymentOfSaleRepository;
     }
 
     public void startBox(BoxEntryDto boxEntry) {
 
-        UserEntity operator = userRepository.findById(boxEntry.getIdOperator())
+        EmployeeEntity operator = employeeRepository.findById(boxEntry.getIdOperator())
                 .orElseThrow(UserNotFound::new);
 
         if (boxRepository.findByStatus(operator, StatusBox.OPEN).isPresent())
@@ -60,11 +59,12 @@ public class BoxService {
 
     @Cacheable(
             value = "box_opened",
-            key = "'box_opened_user_' + T(com.example.PDV.UsersCore.UserService).currentUserId()"
+            key = "'box_opened_employee_' + T(com.example.PDV.EmployeeCore" +
+                    ".EmployeeService).currentEmployeeId()"
     )
     public BoxOpenedOutDto BoxOpened() {
 
-        UserEntity operator = userService.loggedInUser();
+        EmployeeEntity operator = employeeService.loggedInEmployee();
 
         BoxEntity box = boxRepository.findByStatus(operator, StatusBox.OPEN)
                 .orElseThrow(BoxNotFound::new);
@@ -87,7 +87,8 @@ public class BoxService {
 
     @CacheEvict(
             value = "box_opened",
-            key = "'box_opened_user_' + T(com.example.PDV.UsersCore.UserService).currentUserId()"
+            key = "'box_opened_employee_' + T(com.example.PDV.EmployeeCore" +
+                    ".EmployeeService).currentEmployeeId()"
     )
     public void finishBox(Integer boxId) {
 
@@ -102,7 +103,8 @@ public class BoxService {
 
     @CacheEvict(
             value = "box_opened",
-            key = "'box_opened_user_' + T(com.example.PDV.UsersCore.UserService).currentUserId()"
+            key = "'box_opened_employee_' + T(com.example.PDV.EmployeeCore" +
+                    ".EmployeeService).currentEmployeeId()"
     )
     public void evictCacheBoxOpenedForCurrentUser() {
         // só para evict, nada dentro

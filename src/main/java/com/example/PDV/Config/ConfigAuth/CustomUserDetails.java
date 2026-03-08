@@ -1,6 +1,5 @@
 package com.example.PDV.Config.ConfigAuth;
 
-import com.example.PDV.UsersCore.Enums.Roles;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.springframework.security.core.GrantedAuthority;

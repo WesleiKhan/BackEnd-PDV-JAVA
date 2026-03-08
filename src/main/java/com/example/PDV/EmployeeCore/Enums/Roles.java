@@ -1,4 +1,4 @@
-package com.example.PDV.UsersCore.Enums;
+package com.example.PDV.EmployeeCore.Enums;
 
 public enum Roles {
 

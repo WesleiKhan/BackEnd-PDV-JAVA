@@ -1,13 +1,10 @@
 package com.example.PDV.Config.ConfigAuth;
 
-import com.example.PDV.Exceptions.UserNotFound;
-import com.example.PDV.UsersCore.UserEntity;
-import com.example.PDV.UsersCore.UserRepository;
+import com.example.PDV.EmployeeCore.EmployeeRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,16 +19,12 @@ public class SecurityFilterChair extends OncePerRequestFilter {
 
     private final TokenService tokenService;
 
-    private final UserRepository userRepository;
-
     private final AuthorizationService authorizationService;
 
     public SecurityFilterChair(TokenService tokenService,
-                               UserRepository userRepository,
                                AuthorizationService authorizationService) {
 
         this.tokenService = tokenService;
-        this.userRepository = userRepository;
         this.authorizationService = authorizationService;
     }
 

@@ -1,4 +1,4 @@
-package com.example.PDV.UsersCore;
+package com.example.PDV.EmployeeCore;
 
 import com.example.PDV.Exceptions.UserNotFound;
 import org.springframework.http.HttpStatus;
@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @ControllerAdvice
-public class UserControllerExceptions extends ResponseEntityExceptionHandler {
+public class EmployeeControllerExceptions extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(UserNotFound.class)
     private ResponseEntity<String> UserNotFound(UserNotFound message) {

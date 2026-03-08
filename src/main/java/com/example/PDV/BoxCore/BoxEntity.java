@@ -1,10 +1,9 @@
 package com.example.PDV.BoxCore;
 
 import com.example.PDV.BoxCore.BoxEnums.StatusBox;
-import com.example.PDV.UsersCore.UserEntity;
+import com.example.PDV.EmployeeCore.EmployeeEntity;
 import jakarta.persistence.*;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -28,7 +27,7 @@ public class BoxEntity {
 
     @ManyToOne
     @JoinColumn(name = "operator_id")
-    private UserEntity operator;
+    private EmployeeEntity operator;
 
     @Enumerated(EnumType.STRING)
     private StatusBox status_of_box = StatusBox.OPEN;
@@ -42,7 +41,7 @@ public class BoxEntity {
 
     public BoxEntity() {}
 
-    public BoxEntity(UserEntity opeartor) {
+    public BoxEntity(EmployeeEntity opeartor) {
 
         this.operator = opeartor;
     }
@@ -73,11 +72,11 @@ public class BoxEntity {
         }
     }
 
-    public UserEntity getOperator() {
+    public EmployeeEntity getOperator() {
         return operator;
     }
 
-    public void setOperator(UserEntity operator) {
+    public void setOperator(EmployeeEntity operator) {
         this.operator = operator;
     }
 

@@ -1,11 +1,11 @@
-package com.example.PDV.UsersCore;
+package com.example.PDV.EmployeeCore;
 
 import com.example.PDV.Config.ConfigAuth.CustomUserDetails;
 import com.example.PDV.Config.ConfigAuth.TokenService;
-import com.example.PDV.UsersCore.UserDtos.LoginOutDto;
-import com.example.PDV.UsersCore.UserDtos.Refresh;
-import com.example.PDV.UsersCore.UserDtos.UserEntryDto;
-import com.example.PDV.UsersCore.UserDtos.UserOutDto;
+import com.example.PDV.EmployeeCore.EmployeeDtos.LoginOutDto;
+import com.example.PDV.EmployeeCore.EmployeeDtos.Refresh;
+import com.example.PDV.EmployeeCore.EmployeeDtos.EmployeeEntryDto;
+import com.example.PDV.EmployeeCore.EmployeeDtos.EmployeeOutDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,9 +18,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/user")
-public class UserController {
+public class EmployeeController {
 
-    private final UserService userService;
+    private final EmployeeService employeeService;
 
     private final AuthenticationManager authenticationManager;
 
@@ -28,12 +28,12 @@ public class UserController {
 
     private final UserDetailsService userDetailsService;
 
-    public UserController(UserService userService,
-                          AuthenticationManager authenticationManager,
-                          TokenService tokenService,
-                          UserDetailsService userDetailsService) {
+    public EmployeeController(EmployeeService employeeService,
+                              AuthenticationManager authenticationManager,
+                              TokenService tokenService,
+                              UserDetailsService userDetailsService) {
 
-        this.userService = userService;
+        this.employeeService = employeeService;
         this.authenticationManager = authenticationManager;
         this.tokenService = tokenService;
         this.userDetailsService = userDetailsService;
@@ -41,9 +41,9 @@ public class UserController {
 
     @PostMapping("/create")
     @PreAuthorize("hasAuthority('ROLE_MANAGER')")
-    public ResponseEntity<String> createUser(@RequestBody UserEntryDto user) {
+    public ResponseEntity<String> createUser(@RequestBody EmployeeEntryDto user) {
 
-        userService.createUser(user);
+        employeeService.createEmployee(user);
 
         return ResponseEntity.status(HttpStatus.CREATED).body("User Criado Com " +
                 "Sucesso!");
@@ -51,18 +51,18 @@ public class UserController {
 
     @PutMapping("/update/{id}")
     @PreAuthorize("hasAuthority('ROLE_MANAGER')")
-    public ResponseEntity<Void> updateUser(@RequestBody UserEntryDto user,
+    public ResponseEntity<Void> updateUser(@RequestBody EmployeeEntryDto user,
                                              @PathVariable Integer id) {
 
-        userService.updateUser(user, id);
+        employeeService.updateEmployee(user, id);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @GetMapping("/users")
-    public ResponseEntity<List<UserOutDto>> viewUsers() {
+    public ResponseEntity<List<EmployeeOutDto>> viewUsers() {
 
-        List<UserOutDto> users = userService.getUsers();
+        List<EmployeeOutDto> users = employeeService.getEmployee();
 
         return ResponseEntity.ok().body(users);
     }
@@ -71,13 +71,13 @@ public class UserController {
     @PreAuthorize("hasAuthority('ROLE_MANAGER')")
     public ResponseEntity<String> deleteUser(@PathVariable Integer id) {
 
-        userService.deleteUser(id);
+        employeeService.deleteEmployee(id);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginOutDto> login(@RequestBody UserEntryDto entry ) {
+    public ResponseEntity<LoginOutDto> login(@RequestBody EmployeeEntryDto entry ) {
 
         var usernamePassword = new UsernamePasswordAuthenticationToken(
                 entry.getName(), entry.getPassword());

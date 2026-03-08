@@ -1,29 +1,26 @@
 package com.example.PDV.Config.ConfigAuth;
 
 import com.example.PDV.Exceptions.UserNotFound;
-import com.example.PDV.UsersCore.UserEntity;
-import com.example.PDV.UsersCore.UserRepository;
+import com.example.PDV.EmployeeCore.EmployeeEntity;
+import com.example.PDV.EmployeeCore.EmployeeRepository;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
-
 @Service
 public class AuthorizationService implements UserDetailsService {
 
-    private final UserRepository userRepository;
+    private final EmployeeRepository employeeRepository;
 
-    public AuthorizationService(UserRepository userRepository) {
+    public AuthorizationService(EmployeeRepository employeeRepository) {
 
-        this.userRepository = userRepository;
+        this.employeeRepository = employeeRepository;
     }
 
     @Cacheable(
-            value = "users",
+            value = "employee",
             key = "#username",
             unless = "#result == null"
     )
@@ -32,17 +29,17 @@ public class AuthorizationService implements UserDetailsService {
 
         System.out.println("CHAMADA AO BANCO DE DADO");
 
-        UserEntity user = userRepository.findByName(username)
+        EmployeeEntity employee = employeeRepository.findByName(username)
                 .orElseThrow(() -> new UserNotFound("Voce ainda não e " +
                         "cadastrado, por favor realize o cadastro antes de " +
                         "tentar o login novamnete!"));
 
-        System.out.println("ROLE: " + user.getRole());
+        System.out.println("ROLE: " + employee.getRole());
 
-        return new CustomUserDetails(user.getId(),
-                user.getName(),
-                user.getPassword(),
-                user.getRole().name());
+        return new CustomUserDetails(employee.getId(),
+                employee.getName(),
+                employee.getPassword(),
+                employee.getRole().name());
 
     }
 }

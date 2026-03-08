@@ -140,7 +140,8 @@ public class SaleService {
 
     @CachePut(
             value = "Info_Of_Products_Sale",
-            key = "'Info_Of_Products_Sale_user_' + T(com.example.PDV.UsersCore.UserService).currentUserId()"
+            key = "'Info_Of_Products_Sale_user_' + T(com.example.PDV" +
+                    ".EmployeeCore.EmployeeService).currentEmployeeId()"
     )
     public InfoOfProductsSaleDto toWriteInfosInDataRedisOfProductsSale (InfoOfProductsSaleDto info) {
         return info;
@@ -148,7 +149,8 @@ public class SaleService {
 
     @Cacheable(
             value = "Info_Of_Products_Sale",
-            key = "'Info_Of_Products_Sale_user_' + T(com.example.PDV.UsersCore.UserService).currentUserId()",
+            key = "'Info_Of_Products_Sale_user_' + T(com.example.PDV" +
+                    ".EmployeeCore.EmployeeService).currentEmployeeId()",
             unless = "#result == null"
     )
     public InfoOfProductsSaleDto readInfosInDataRedisOfProductsSale () {
@@ -157,7 +159,8 @@ public class SaleService {
 
     @CacheEvict(
             value = "Info_Of_Products_Sale",
-            key = "'Info_Of_Products_Sale_user_' + T(com.example.PDV.UsersCore.UserService).currentUserId()"
+            key = "'Info_Of_Products_Sale_user_' + T(com.example.PDV" +
+                    ".EmployeeCore.EmployeeService).currentEmployeeId()"
     )
     public void evictCacheInfosInDataRedisOfProductsSale () {
         // só para evict, nada dentro

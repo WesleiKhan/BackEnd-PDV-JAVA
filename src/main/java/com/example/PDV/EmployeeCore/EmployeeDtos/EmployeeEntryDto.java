@@ -1,8 +1,8 @@
-package com.example.PDV.UsersCore.UserDtos;
+package com.example.PDV.EmployeeCore.EmployeeDtos;
 
-import com.example.PDV.UsersCore.Enums.Roles;
+import com.example.PDV.EmployeeCore.Enums.Roles;
 
-public class UserEntryDto {
+public class EmployeeEntryDto {
 
     private String name;
 

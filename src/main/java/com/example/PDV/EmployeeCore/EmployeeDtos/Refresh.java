@@ -1,4 +1,4 @@
-package com.example.PDV.UsersCore.UserDtos;
+package com.example.PDV.EmployeeCore.EmployeeDtos;
 
 public class Refresh {
 

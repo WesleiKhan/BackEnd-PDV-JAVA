@@ -36,6 +36,7 @@ public class PaymentOfSaleEntity {
     }
 
     public Integer getId() {
+
         return id;
     }
 

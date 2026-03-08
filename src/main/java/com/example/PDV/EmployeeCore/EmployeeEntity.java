@@ -1,14 +1,12 @@
-package com.example.PDV.UsersCore;
+package com.example.PDV.EmployeeCore;
 
-import com.example.PDV.UsersCore.Enums.Roles;
-import com.example.PDV.UsersCore.UserDtos.UserEntryDto;
+import com.example.PDV.EmployeeCore.Enums.Roles;
+import com.example.PDV.EmployeeCore.EmployeeDtos.EmployeeEntryDto;
 import jakarta.persistence.*;
 
-import java.io.Serializable;
-
 @Entity
-@Table(name = "users")
-public class UserEntity {
+@Table(name = "employees")
+public class EmployeeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,11 +22,11 @@ public class UserEntity {
     @Column(name = "role")
     private Roles role;
 
-    public UserEntity() {
+    public EmployeeEntity() {
 
     }
 
-    public UserEntity(UserEntryDto user) {
+    public EmployeeEntity(EmployeeEntryDto user) {
 
         if (user.getName() != null && !user.getName().trim().isEmpty()
                 && user.getPassword() != null && !user.getPassword().trim().isEmpty()
@@ -58,7 +56,7 @@ public class UserEntity {
         this.password = password;
     }
 
-    public void updateUser(UserEntryDto user) {
+    public void updateUser(EmployeeEntryDto user) {
 
         if (user.getName() != null && !user.getName().trim().isEmpty()) {
             this.name = user.getName();
