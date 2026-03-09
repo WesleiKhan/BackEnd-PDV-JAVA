@@ -1,4 +1,4 @@
-package com.example.PDV.CustomerCore;
+package com.example.PDV.CustomerCore.Enums;
 
 public enum TypeCustomer {
     PF,

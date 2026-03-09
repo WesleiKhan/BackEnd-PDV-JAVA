@@ -1,5 +1,7 @@
 package com.example.PDV.CustomerCore;
 
+import com.example.PDV.CustomerCore.Dtos.CustomerEntryDto;
+import com.example.PDV.CustomerCore.Enums.TypeCustomer;
 import jakarta.persistence.*;
 
 @Entity
@@ -48,7 +50,8 @@ public class CustomerEntity {
     }
 
     public void setName(String name) {
-        this.name = name;
+
+        if(name != null && !name.trim().isEmpty()){this.name = name;}
     }
 
     public String getCpf() {
@@ -56,7 +59,7 @@ public class CustomerEntity {
     }
 
     public void setCpf(String cpf) {
-        this.cpf = cpf;
+        if(cpf != null && !cpf.trim().isEmpty()){this.cpf = cpf;}
     }
 
     public String getCnpj() {
@@ -64,7 +67,7 @@ public class CustomerEntity {
     }
 
     public void setCnpj(String cnpj) {
-        this.cnpj = cnpj;
+        if(cnpj != null && !cnpj.trim().isEmpty()){this.cnpj = cnpj;}
     }
 
     public String getPhoneNumber() {
@@ -72,7 +75,8 @@ public class CustomerEntity {
     }
 
     public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
+        if(phoneNumber != null && !phoneNumber.trim().isEmpty()){this.phoneNumber =
+                phoneNumber;}
     }
 
     public TypeCustomer getTypeCustomer() {
@@ -83,5 +87,26 @@ public class CustomerEntity {
         this.typeCustomer = typeCustomer;
     }
 
+    public void endRegister(CustomerEntryDto entry) {
 
+        if (entry.getCpf() != null && !entry.getCpf().trim().isEmpty()) {
+
+            this.cpf = entry.getCpf();
+            this.typeCustomer = TypeCustomer.PF;
+
+        } else if (entry.getCnpj() != null && !entry.getCnpj().trim().isEmpty()) {
+
+            this.cnpj = entry.getCnpj();
+            this.typeCustomer = TypeCustomer.PJ;
+
+        }
+    }
+
+    public void updateCustomer (CustomerEntryDto entry) {
+
+        setName(entry.getName());
+        setCpf(entry.getCpf());
+        setCnpj(entry.getCnpj());
+        setPhoneNumber(entry.getPhoneNumber());
+    }
 }
