@@ -19,10 +19,11 @@ public class SaleController {
         this.saleService = saleService;
     }
 
-    @PostMapping("/make")
-    public ResponseEntity<String> makeSale(@RequestBody SaleEntryDto saleEntry) {
+    @PostMapping("/make/{id}")
+    public ResponseEntity<String> makeSale(@PathVariable Integer id,
+                                           @RequestBody SaleEntryDto saleEntry) {
 
-        saleService.makeSale(saleEntry);
+        saleService.makeSale(saleEntry, id);
         saleService.evictCacheInfosInDataRedisOfProductsSale();
 
         return ResponseEntity.status(HttpStatus.CREATED).body("Venda realizada");

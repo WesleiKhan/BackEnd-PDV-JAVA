@@ -1,5 +1,6 @@
 package com.example.PDV.SaleCore.Entities;
 
+import com.example.PDV.Agreement.AgreementEntity;
 import com.example.PDV.BoxCore.BoxEntity;
 import jakarta.persistence.*;
 
@@ -28,6 +29,10 @@ public class SaleEntity {
     @Column(name = "quantity_items")
     private Integer quantity;
 
+    @ManyToOne
+    @JoinColumn(name = "agreement_id", referencedColumnName = "id")
+    private AgreementEntity agreement;
+
     @PrePersist
     public void onCreate() {
 
@@ -36,17 +41,14 @@ public class SaleEntity {
 
     public SaleEntity() {}
 
-    public SaleEntity(BoxEntity boxEntity) {
+    public SaleEntity(BoxEntity boxEntity, AgreementEntity agreement) {
 
         this.box = boxEntity;
+        this.agreement = agreement;
     }
 
     public Integer getId() {
         return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
     }
 
     public BoxEntity getBox() {
@@ -79,5 +81,13 @@ public class SaleEntity {
 
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
+    }
+
+    public AgreementEntity getAgreement() {
+        return agreement;
+    }
+
+    public void setAgreement(AgreementEntity agreement) {
+        this.agreement = agreement;
     }
 }

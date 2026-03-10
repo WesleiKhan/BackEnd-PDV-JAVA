@@ -1,5 +1,8 @@
 package com.example.PDV.SaleCore;
 
+import com.example.PDV.Agreement.AgreementEntity;
+import com.example.PDV.Agreement.AgreementRepository;
+import com.example.PDV.Agreement.Exceptions.AgreementNotFound;
 import com.example.PDV.BoxCore.BoxEntity;
 import com.example.PDV.BoxCore.BoxRepository;
 import com.example.PDV.BoxCore.BoxService;
@@ -36,7 +39,9 @@ public class SaleService {
 
     private final SaleRepository saleRepository;
 
-    private PaymentOfSaleRepository paymentOfSaleRepository;
+    private final PaymentOfSaleRepository paymentOfSaleRepository;
+
+    private final AgreementRepository agreementRepository;
 
     private final BoxRepository boxRepository;
 
@@ -49,6 +54,7 @@ public class SaleService {
     public SaleService(ItemsForSaleRepository itemsForSaleRepository,
                        SaleRepository saleRepository,
                        BoxRepository boxRepository,
+                       AgreementRepository agreementRepository,
                        BoxService boxService,
                        PaymentOfSaleRepository paymentOfSaleRepository,
                        ProductRepository productRepository,
@@ -57,18 +63,22 @@ public class SaleService {
         this.itemsForSaleRepository = itemsForSaleRepository;
         this.saleRepository = saleRepository;
         this.paymentOfSaleRepository = paymentOfSaleRepository;
+        this.agreementRepository = agreementRepository;
         this.boxService = boxService;
         this.boxRepository = boxRepository;
         this.productRepository = productRepository;
         this.productService = productService;
     }
 
-    public void makeSale(SaleEntryDto saleEntry) {
+    public void makeSale(SaleEntryDto saleEntry, Integer id) {
+
+        AgreementEntity agreement = agreementRepository.findById(id)
+                .orElseThrow(AgreementNotFound::new);
 
         BoxEntity box = boxRepository.findById(saleEntry.getBoxId())
                 .orElseThrow(BoxNotFound::new);
 
-        SaleEntity sale = new SaleEntity(box);
+        SaleEntity sale = new SaleEntity(box, agreement);
 
         List<ItemsForSaleEntity> sales = new ArrayList<>();
 
@@ -113,13 +123,19 @@ public class SaleService {
             throw new PriceIsNotEqual();
         }
 
+        BigDecimal percentageToBeAdded = valueTotal
+                .multiply(agreement.getPercentage())
+                        .divide(new BigDecimal("100"));
+
+        BigDecimal finalValue = valueTotal.add(percentageToBeAdded);
+
         sale.setQuantity(quantity);
-        sale.setTotalValueSale(valueTotal);
+        sale.setTotalValueSale(finalValue);
         saleRepository.save(sale);
 
         paymentOfSaleRepository.saveAll(payments);
 
-        box.setTotalValue(valueTotal);
+        box.setTotalValue(finalValue);
         boxRepository.save(box);
 
         boxService.evictCacheBoxOpenedForCurrentUser();
