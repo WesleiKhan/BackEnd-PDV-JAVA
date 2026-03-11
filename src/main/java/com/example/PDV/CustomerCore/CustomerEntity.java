@@ -1,6 +1,7 @@
 package com.example.PDV.CustomerCore;
 
 import com.example.PDV.CustomerCore.Dtos.CustomerEntryDto;
+import com.example.PDV.CustomerCore.Dtos.InfosCustomerDto;
 import com.example.PDV.CustomerCore.Enums.TypeCustomer;
 import jakarta.persistence.*;
 
@@ -108,5 +109,11 @@ public class CustomerEntity {
         setCpf(entry.getCpf());
         setCnpj(entry.getCnpj());
         setPhoneNumber(entry.getPhoneNumber());
+    }
+
+    public InfosCustomerDto seeInfosCustomer () {
+
+        return new InfosCustomerDto(getName(), getCpf(), getCnpj(),
+                getPhoneNumber());
     }
 }

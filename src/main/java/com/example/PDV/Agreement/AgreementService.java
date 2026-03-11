@@ -3,7 +3,7 @@ package com.example.PDV.Agreement;
 import com.example.PDV.Agreement.Dtos.AgreementEntryDto;
 import com.example.PDV.Agreement.Dtos.AgreementOutDto;
 import com.example.PDV.Agreement.Dtos.AgreementUpdateDto;
-import com.example.PDV.Agreement.Dtos.InfosCustomerOfAgreement;
+import com.example.PDV.CustomerCore.Dtos.InfosCustomerDto;
 import com.example.PDV.Agreement.Exceptions.AgreementNotFound;
 import com.example.PDV.CustomerCore.CustomerEntity;
 import com.example.PDV.CustomerCore.CustomerRepository;
@@ -44,12 +44,7 @@ public class AgreementService {
         return agreementRepository.findAll()
                 .stream().map(a -> new AgreementOutDto(
                         a.getId(),
-                        new InfosCustomerOfAgreement(
-                                a.getCustomer().getName(),
-                                a.getCustomer().getCpf(),
-                                a.getCustomer().getCnpj(),
-                                a.getCustomer().getPhoneNumber()
-                                ),
+                        a.getCustomer().seeInfosCustomer(),
                         a.getDateStartAgreement(),
                         a.getDateEndAgreement(),
                         a.getStatus(),
