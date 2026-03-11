@@ -3,6 +3,7 @@ package com.example.PDV.CustomerCore;
 import com.example.PDV.CustomerCore.Dtos.CustomerEntryDto;
 import com.example.PDV.CustomerCore.Dtos.InfosCustomerDto;
 import com.example.PDV.CustomerCore.Enums.TypeCustomer;
+import com.example.PDV.Utils.FormattingPersonalDataToDisplay;
 import jakarta.persistence.*;
 
 @Entity
@@ -113,7 +114,12 @@ public class CustomerEntity {
 
     public InfosCustomerDto seeInfosCustomer () {
 
-        return new InfosCustomerDto(getName(), getCpf(), getCnpj(),
+        FormattingPersonalDataToDisplay formatter =
+                new FormattingPersonalDataToDisplay();
+
+        return new InfosCustomerDto(getName(),
+                formatter.formattingCPF(getCpf()),
+                formatter.formattingCNPJ(getCnpj()),
                 getPhoneNumber());
     }
 }
