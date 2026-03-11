@@ -54,4 +54,21 @@ public class AgreementController {
 
         return ResponseEntity.ok().body("Convenio deletado com sucesso");
     }
+
+    @PostMapping("/save/redis")
+    public ResponseEntity<String> saveAgreementOnRedis(@RequestBody AgreementOutDto agreement) {
+
+        AgreementOutDto agreementOut = agreementService.saveAgreementOnRedis(agreement);
+
+        return ResponseEntity.ok().body("Convenio selecionado savo com " +
+                "sucesso");
+    }
+
+    @GetMapping("/read/redis")
+    public ResponseEntity<AgreementOutDto> readAgreementDto() {
+
+        AgreementOutDto agreement = agreementService.readAgreementOnRedis();
+
+        return ResponseEntity.ok().body(agreement);
+    }
 }

@@ -8,6 +8,9 @@ import com.example.PDV.Agreement.Exceptions.AgreementNotFound;
 import com.example.PDV.CustomerCore.CustomerEntity;
 import com.example.PDV.CustomerCore.CustomerRepository;
 import com.example.PDV.Exceptions.UserNotFound;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -68,5 +71,33 @@ public class AgreementService {
                 .orElseThrow(AgreementNotFound::new);
 
         agreementRepository.delete(agreement);
+    }
+
+    @CachePut(
+            value = "Agreement_Out",
+            key = "'Agreement_Out_id_' + T(com.example.PDV" +
+                    ".EmployeeCore.EmployeeService).currentEmployeeId()"
+    )
+    public AgreementOutDto saveAgreementOnRedis(AgreementOutDto entry) {
+        return entry;
+    }
+
+    @Cacheable(
+            value = "Agreement_Out",
+            key = "'Agreement_Out_id_' + T(com.example.PDV" +
+                    ".EmployeeCore.EmployeeService).currentEmployeeId()",
+            unless = "#result == null"
+    )
+    public AgreementOutDto readAgreementOnRedis() {
+        return null;
+    }
+
+    @CacheEvict(
+            value = "Agreement_Out",
+            key = "'Agreement_Out_id_' + T(com.example.PDV" +
+                    ".EmployeeCore.EmployeeService).currentEmployeeId()"
+    )
+    public void deleteAgreementOnRedis() {
+
     }
 }
