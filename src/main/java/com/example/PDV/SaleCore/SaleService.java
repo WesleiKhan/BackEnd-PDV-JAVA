@@ -28,6 +28,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -84,9 +85,9 @@ public class SaleService {
 
         List<PaymentOfSaleEntity> payments = new ArrayList<>();
 
-        BigDecimal valueTotal = new BigDecimal(0);
+        BigDecimal valueTotal = BigDecimal.ZERO;
 
-        BigDecimal totalPricePayment = new BigDecimal(0);
+        BigDecimal totalPricePayment = BigDecimal.ZERO;
 
         Integer quantity = 0;
 
@@ -106,28 +107,41 @@ public class SaleService {
             sales.add(items);
         }
 
+        BigDecimal percentageToBeAdded = valueTotal
+                .multiply(agreement.getPercentage())
+                .divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
+
+        BigDecimal finalValue = valueTotal.add(percentageToBeAdded);
+
         for (Map.Entry<KindOfPayment, BigDecimal> entry : saleEntry.getPayment()
                         .getInfoPayment().entrySet()) {
 
-            PaymentOfSaleEntity payment = new PaymentOfSaleEntity(entry.getKey(),
-                    entry.getValue(), sale);
+            BigDecimal paymentValue = entry.getValue();
 
-            totalPricePayment = totalPricePayment.add(entry.getValue());
+            BigDecimal proportion = paymentValue.divide(valueTotal, 6,
+                    RoundingMode.HALF_UP);
+
+            BigDecimal feePart = percentageToBeAdded
+                    .multiply(proportion)
+                    .setScale(2, RoundingMode.HALF_UP);
+
+            BigDecimal finalPaymentValue = paymentValue.add(feePart);
+
+            PaymentOfSaleEntity payment = new PaymentOfSaleEntity(entry.getKey(),
+                    finalPaymentValue, sale);
+
+            totalPricePayment = totalPricePayment.add(finalPaymentValue);
 
             payments.add(payment);
         }
 
-        if (totalPricePayment == null || valueTotal == null
-                || totalPricePayment.compareTo(valueTotal) != 0) {
+        if (totalPricePayment == null || finalValue == null
+                || totalPricePayment.compareTo(finalValue) != 0) {
 
+            System.out.println("Valor total Payment: " + totalPricePayment + " valor final: " + finalValue);
             throw new PriceIsNotEqual();
         }
 
-        BigDecimal percentageToBeAdded = valueTotal
-                .multiply(agreement.getPercentage())
-                        .divide(new BigDecimal("100"));
-
-        BigDecimal finalValue = valueTotal.add(percentageToBeAdded);
 
         sale.setQuantity(quantity);
         sale.setTotalValueSale(finalValue);
