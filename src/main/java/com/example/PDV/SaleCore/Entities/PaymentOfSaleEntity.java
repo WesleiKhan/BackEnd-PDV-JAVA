@@ -1,5 +1,6 @@
 package com.example.PDV.SaleCore.Entities;
 
+import com.example.PDV.SaleCore.SaleEnums.Installments;
 import com.example.PDV.SaleCore.SaleEnums.KindOfPayment;
 import jakarta.persistence.*;
 
@@ -24,6 +25,13 @@ public class PaymentOfSaleEntity {
     @ManyToOne
     @JoinColumn(name = "sale_id")
     private SaleEntity sale;
+
+    @Column(name = "installment")
+    @Enumerated(EnumType.STRING)
+    private Installments installment;
+
+    @Column(name = "installment_value")
+    private String installment_value;
 
     public PaymentOfSaleEntity() {}
 
@@ -66,5 +74,21 @@ public class PaymentOfSaleEntity {
 
     public void setSale(SaleEntity sale) {
         this.sale = sale;
+    }
+
+    public Installments getInstallment() {
+        return installment;
+    }
+
+    public void setInstallment(Installments installment) {
+        this.installment = installment;
+    }
+
+    public String getInstallment_value() {
+        return installment_value;
+    }
+
+    public void setInstallment_value(String installment_value) {
+        this.installment_value = installment_value;
     }
 }

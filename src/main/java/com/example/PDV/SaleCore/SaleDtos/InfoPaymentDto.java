@@ -7,13 +7,13 @@ import java.util.Map;
 
 public class InfoPaymentDto {
 
-    private Map<KindOfPayment, BigDecimal> infoPayment;
+    private Map<KindOfPayment, ValueAndInstallments> infoPayment;
 
-    public Map<KindOfPayment, BigDecimal> getInfoPayment() {
+    public Map<KindOfPayment, ValueAndInstallments> getInfoPayment() {
         return infoPayment;
     }
 
-    public void setInfoPayment(Map<KindOfPayment, BigDecimal> infoPayment) {
+    public void setInfoPayment(Map<KindOfPayment, ValueAndInstallments> infoPayment) {
         this.infoPayment = infoPayment;
     }
 }

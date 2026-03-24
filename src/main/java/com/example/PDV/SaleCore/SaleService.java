@@ -21,6 +21,8 @@ import com.example.PDV.SaleCore.Repositories.PaymentOfSaleRepository;
 import com.example.PDV.SaleCore.Repositories.SaleRepository;
 import com.example.PDV.SaleCore.SaleDtos.InfoOfProductsSaleDto;
 import com.example.PDV.SaleCore.SaleDtos.SaleEntryDto;
+import com.example.PDV.SaleCore.SaleDtos.ValueAndInstallments;
+import com.example.PDV.SaleCore.SaleEnums.Installments;
 import com.example.PDV.SaleCore.SaleEnums.KindOfPayment;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -113,10 +115,10 @@ public class SaleService {
 
         BigDecimal finalValue = valueTotal.add(percentageToBeAdded);
 
-        for (Map.Entry<KindOfPayment, BigDecimal> entry : saleEntry.getPayment()
+        for (Map.Entry<KindOfPayment, ValueAndInstallments> entry : saleEntry.getPayment()
                         .getInfoPayment().entrySet()) {
 
-            BigDecimal paymentValue = entry.getValue();
+            BigDecimal paymentValue = entry.getValue().getValuePayment();
 
             BigDecimal proportion = paymentValue.divide(valueTotal, 6,
                     RoundingMode.HALF_UP);
@@ -131,6 +133,19 @@ public class SaleService {
                     finalPaymentValue, sale);
 
             totalPricePayment = totalPricePayment.add(finalPaymentValue);
+
+            if (entry.getKey() == KindOfPayment.CREDITO) {
+
+                Installments installments = entry.getValue().getInstallments();
+
+                BigDecimal installmentValue = finalPaymentValue
+                                .divide(new BigDecimal(installments.getQuantity()), 2,
+                                        RoundingMode.HALF_UP);
+
+                payment.setInstallment(installments);
+                payment.setInstallment_value(installments.getQuantity() + "x" +
+                        " R$ " + installmentValue);
+            }
 
             payments.add(payment);
         }
