@@ -3,6 +3,7 @@ package com.example.PDV.CustomerCore;
 import com.example.PDV.CustomerCore.Dtos.CustomerEntryDto;
 import com.example.PDV.CustomerCore.Dtos.CustomerOutDto;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +20,7 @@ public class CustomerController {
     }
 
     @PostMapping("/create")
+    @PreAuthorize("hasAuthority('ROLE_MANAGER')")
     public ResponseEntity<String> createCustomer(@RequestBody CustomerEntryDto entry) {
 
         customerService.createCustomer(entry);
@@ -33,6 +35,7 @@ public class CustomerController {
     }
 
     @PutMapping("/update/{id}")
+    @PreAuthorize("hasAuthority('ROLE_MANAGER')")
     public ResponseEntity<String> updateCustomer(@RequestBody CustomerEntryDto entry, @PathVariable Integer id) {
 
         customerService.updateCustomer(entry, id);
@@ -42,6 +45,7 @@ public class CustomerController {
     }
 
     @DeleteMapping("/delete/{id}")
+    @PreAuthorize("hasAuthority('ROLE_MANAGER)")
     public ResponseEntity<String> deleteCustomer(@PathVariable Integer id) {
 
         customerService.deleteCustomer(id);
