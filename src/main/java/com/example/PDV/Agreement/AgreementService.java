@@ -8,6 +8,10 @@ import com.example.PDV.Agreement.Exceptions.AgreementNotFound;
 import com.example.PDV.CustomerCore.CustomerEntity;
 import com.example.PDV.CustomerCore.CustomerRepository;
 import com.example.PDV.Exceptions.UserNotFound;
+import com.example.PDV.LogsCore.ActivityLogsService;
+import com.example.PDV.LogsCore.Dtos.ActivityLogsEntryDto;
+import com.example.PDV.LogsCore.Enums.EntityType;
+import com.example.PDV.LogsCore.Enums.TypeAction;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -22,11 +26,15 @@ public class AgreementService {
 
     private final CustomerRepository customerRepository;
 
+    private final ActivityLogsService activityLogsService;
+
     public AgreementService(AgreementRepository agreementRepository,
-                            CustomerRepository customerRepository) {
+                            CustomerRepository customerRepository,
+                            ActivityLogsService activityLogsService) {
 
         this.agreementRepository = agreementRepository;
         this.customerRepository = customerRepository;
+        this.activityLogsService = activityLogsService;
     }
 
     public void registerAgreement(AgreementEntryDto entry, Integer id) {
@@ -38,6 +46,8 @@ public class AgreementService {
         AgreementEntity newAgreement = new AgreementEntity(entry);
         newAgreement.setCustomer(customer);
 
+        activityLogsService.createActivityLogs(new ActivityLogsEntryDto(EntityType.AGREEMENT,
+                newAgreement.getId(), TypeAction.CREATE));
 
         agreementRepository.save(newAgreement);
     }
@@ -62,6 +72,9 @@ public class AgreementService {
 
         agreement.updateAgreement(entryUpdate);
 
+        activityLogsService.createActivityLogs(new ActivityLogsEntryDto(EntityType.AGREEMENT,
+                agreement.getId(), TypeAction.UPDATE));
+
         agreementRepository.save(agreement);
     }
 
@@ -69,6 +82,9 @@ public class AgreementService {
 
         AgreementEntity agreement = agreementRepository.findById(id)
                 .orElseThrow(AgreementNotFound::new);
+
+        activityLogsService.createActivityLogs(new ActivityLogsEntryDto(EntityType.AGREEMENT,
+                agreement.getId(), TypeAction.DELETE));
 
         agreementRepository.delete(agreement);
     }

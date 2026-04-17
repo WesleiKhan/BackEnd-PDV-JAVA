@@ -17,6 +17,14 @@ public class ActivityLogsEntryDto {
 
     private String description;
 
+    public ActivityLogsEntryDto(EntityType entityType, Integer entity_id,
+                                TypeAction action) {
+        this.entityType = entityType;
+        this.entity_id = entity_id;
+        this.action = action;
+    }
+
+
     public EntityType getEntityType() {
         return entityType;
     }
