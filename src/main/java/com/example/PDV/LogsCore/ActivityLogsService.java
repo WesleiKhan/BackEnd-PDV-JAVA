@@ -1,6 +1,7 @@
 package com.example.PDV.LogsCore;
 
 import com.example.PDV.EmployeeCore.EmployeeEntity;
+import com.example.PDV.EmployeeCore.EmployeeService;
 import com.example.PDV.LogsCore.Dtos.ActivityLogsEntryDto;
 import com.example.PDV.LogsCore.Enums.EntityType;
 import com.example.PDV.LogsCore.Enums.TypeAction;
@@ -11,18 +12,25 @@ public class ActivityLogsService {
 
     private final ActivityLogsRepository activityLogsRepository;
 
-    public ActivityLogsService(ActivityLogsRepository activityLogsRepository) {
+    private final EmployeeService employeeService;
+
+    public ActivityLogsService(ActivityLogsRepository activityLogsRepository
+            ,EmployeeService employeeService) {
 
         this.activityLogsRepository = activityLogsRepository;
+        this.employeeService = employeeService;
 
     }
 
     public void createActivityLogs(ActivityLogsEntryDto entry) {
 
-        String descriptio = createDescription(entry.getEmployee(),
+        EmployeeEntity employee = employeeService.loggedInEmployee();
+
+        String descriptio = createDescription(employee,
                 entry.getEntityType(), entry.getAction());
 
         entry.setDescription(descriptio);
+        entry.setEmployee(employee);
 
         ActivityLogEntity activityLog = new ActivityLogEntity(entry);
 
