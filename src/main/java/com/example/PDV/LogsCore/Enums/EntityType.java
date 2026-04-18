@@ -5,5 +5,6 @@ public enum EntityType {
     BOX,
     SALE,
     PRODUCT,
-    CUSTOMER
+    CUSTOMER,
+    EMPLOYEE
 }

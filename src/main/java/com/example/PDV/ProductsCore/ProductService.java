@@ -1,6 +1,10 @@
 package com.example.PDV.ProductsCore;
 
 import com.example.PDV.Exceptions.ProductNotFound;
+import com.example.PDV.LogsCore.ActivityLogsService;
+import com.example.PDV.LogsCore.Dtos.ActivityLogsEntryDto;
+import com.example.PDV.LogsCore.Enums.EntityType;
+import com.example.PDV.LogsCore.Enums.TypeAction;
 import com.example.PDV.ProductsCore.ProductDtos.ProductEntryDto;
 import com.example.PDV.ProductsCore.ProductDtos.ProductsDto;
 import org.springframework.cache.annotation.CacheEvict;
@@ -14,14 +18,21 @@ public class ProductService {
 
     private final ProductRepository productRepository;
 
-    public ProductService(ProductRepository productRepository) {
+    private final ActivityLogsService activityLogsService;
+
+    public ProductService(ProductRepository productRepository,
+                          ActivityLogsService activityLogsService) {
 
         this.productRepository = productRepository;
+        this.activityLogsService = activityLogsService;
     }
 
     public void createProduct(ProductEntryDto entry) {
 
         ProductEntity newProduct = new ProductEntity(entry);
+
+        activityLogsService.createActivityLogs(new ActivityLogsEntryDto(EntityType.PRODUCT,
+                newProduct.getId(), TypeAction.CREATE));
 
         productRepository.save(newProduct);
     }
@@ -46,18 +57,26 @@ public class ProductService {
 
     public void updateProduct(ProductEntryDto entry, Integer productId) {
 
-        ProductEntity newProducto = productRepository.findById(productId)
+        ProductEntity newProduct = productRepository.findById(productId)
                 .orElseThrow(ProductNotFound::new);
 
-        newProducto.updateProduct(entry);
+        newProduct.updateProduct(entry);
 
-        productRepository.save(newProducto);
+        activityLogsService.createActivityLogs(new ActivityLogsEntryDto(EntityType.PRODUCT,
+                newProduct.getId(), TypeAction.UPDATE));
+
+
+        productRepository.save(newProduct);
     }
 
     public void deleteProduct(Integer productId) {
 
         ProductEntity product = productRepository.findById(productId)
                         .orElseThrow(ProductNotFound::new);
+
+        activityLogsService.createActivityLogs(new ActivityLogsEntryDto(EntityType.PRODUCT,
+                product.getId(), TypeAction.DELETE));
+
 
         productRepository.delete(product);
     }

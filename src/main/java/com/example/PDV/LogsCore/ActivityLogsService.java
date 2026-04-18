@@ -68,6 +68,10 @@ public class ActivityLogsService {
                   return String.format("O Operador De Caixa: %s, Realizou  " +
                         "Cancelamento de uma venda", employee.getName());
             }
+            case TypeAction.FINISHED_BOX -> {
+                return String.format("O Operador De Caixa: %s, Realizou  " +
+                        "o encerramento do caixa", employee.getName());
+            }
 
 
             default -> throw new IllegalArgumentException("Ação não " +

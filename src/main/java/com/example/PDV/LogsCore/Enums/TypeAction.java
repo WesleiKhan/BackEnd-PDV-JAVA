@@ -5,5 +5,6 @@ public enum TypeAction {
     UPDATE,
     DELETE,
     SALE,
-    SALE_CANCEL
+    SALE_CANCEL,
+    FINISHED_BOX
 }

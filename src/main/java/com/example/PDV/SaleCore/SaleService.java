@@ -10,6 +10,10 @@ import com.example.PDV.Exceptions.BoxNotFound;
 import com.example.PDV.Exceptions.PriceIsNotEqual;
 import com.example.PDV.Exceptions.ProductNotFound;
 import com.example.PDV.Exceptions.SaleNotFound;
+import com.example.PDV.LogsCore.ActivityLogsService;
+import com.example.PDV.LogsCore.Dtos.ActivityLogsEntryDto;
+import com.example.PDV.LogsCore.Enums.EntityType;
+import com.example.PDV.LogsCore.Enums.TypeAction;
 import com.example.PDV.ProductsCore.ProductEntity;
 import com.example.PDV.ProductsCore.ProductRepository;
 import com.example.PDV.ProductsCore.ProductService;
@@ -54,6 +58,8 @@ public class SaleService {
 
     private final ProductService productService;
 
+    private final ActivityLogsService activityLogsService;
+
     public SaleService(ItemsForSaleRepository itemsForSaleRepository,
                        SaleRepository saleRepository,
                        BoxRepository boxRepository,
@@ -61,7 +67,8 @@ public class SaleService {
                        BoxService boxService,
                        PaymentOfSaleRepository paymentOfSaleRepository,
                        ProductRepository productRepository,
-                       ProductService productService) {
+                       ProductService productService,
+                       ActivityLogsService activityLogsService) {
 
         this.itemsForSaleRepository = itemsForSaleRepository;
         this.saleRepository = saleRepository;
@@ -71,6 +78,7 @@ public class SaleService {
         this.boxRepository = boxRepository;
         this.productRepository = productRepository;
         this.productService = productService;
+        this.activityLogsService = activityLogsService;
     }
 
     public void makeSale(SaleEntryDto saleEntry, Integer id) {
@@ -157,6 +165,9 @@ public class SaleService {
             throw new PriceIsNotEqual();
         }
 
+        activityLogsService.createActivityLogs(new ActivityLogsEntryDto(EntityType.SALE,
+                sale.getId(), TypeAction.SALE));
+
 
         sale.setQuantity(quantity);
         sale.setTotalValueSale(finalValue);
@@ -179,6 +190,10 @@ public class SaleService {
 
         ItemsForSaleEntity sale = itemsForSaleRepository.findById(saleId)
                 .orElseThrow(SaleNotFound::new);
+
+        activityLogsService.createActivityLogs(new ActivityLogsEntryDto(EntityType.SALE,
+                sale.getId(), TypeAction.SALE_CANCEL));
+
 
         itemsForSaleRepository.delete(sale);
     }

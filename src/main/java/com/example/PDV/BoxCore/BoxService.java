@@ -6,6 +6,10 @@ import com.example.PDV.BoxCore.BoxEnums.StatusBox;
 import com.example.PDV.Exceptions.BoxNotFound;
 import com.example.PDV.Exceptions.OperatorAlreadyBoxOpened;
 import com.example.PDV.Exceptions.UserNotFound;
+import com.example.PDV.LogsCore.ActivityLogsService;
+import com.example.PDV.LogsCore.Dtos.ActivityLogsEntryDto;
+import com.example.PDV.LogsCore.Enums.EntityType;
+import com.example.PDV.LogsCore.Enums.TypeAction;
 import com.example.PDV.SaleCore.Repositories.PaymentOfSaleRepository;
 import com.example.PDV.SaleCore.SaleDtos.PaymentSummary;
 import com.example.PDV.SaleCore.SaleEnums.KindOfPayment;
@@ -33,15 +37,19 @@ public class BoxService {
 
     private final PaymentOfSaleRepository paymentOfSaleRepository;
 
+    private final ActivityLogsService activityLogsService;
+
     public BoxService(BoxRepository boxRepository,
                       EmployeeRepository employeeRepository,
                       EmployeeService employeeService,
-                      PaymentOfSaleRepository paymentOfSaleRepository) {
+                      PaymentOfSaleRepository paymentOfSaleRepository,
+                      ActivityLogsService activityLogsService) {
 
         this.boxRepository = boxRepository;
         this.employeeRepository = employeeRepository;
         this.employeeService = employeeService;
         this.paymentOfSaleRepository = paymentOfSaleRepository;
+        this.activityLogsService = activityLogsService;
     }
 
     public void startBox(BoxEntryDto boxEntry) {
@@ -53,6 +61,9 @@ public class BoxService {
             throw new OperatorAlreadyBoxOpened();
 
         BoxEntity box = new BoxEntity(operator);
+
+        activityLogsService.createActivityLogs(new ActivityLogsEntryDto(EntityType.BOX,
+                box.getId(), TypeAction.CREATE));
 
         boxRepository.save(box);
     }
@@ -92,13 +103,16 @@ public class BoxService {
     )
     public void finishBox(Integer boxId) {
 
-        BoxEntity newBox = boxRepository.findById(boxId)
+        BoxEntity box = boxRepository.findById(boxId)
                 .orElseThrow(BoxNotFound::new);
 
-        newBox.setEndDate(LocalDateTime.now());
-        newBox.setStatus_of_box(StatusBox.CLOSE);
+        box.setEndDate(LocalDateTime.now());
+        box.setStatus_of_box(StatusBox.CLOSE);
 
-        boxRepository.save(newBox);
+        activityLogsService.createActivityLogs(new ActivityLogsEntryDto(EntityType.BOX,
+                boxId, TypeAction.FINISHED_BOX));
+
+        boxRepository.save(box);
     }
 
     @CacheEvict(
