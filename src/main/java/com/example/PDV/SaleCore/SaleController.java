@@ -2,6 +2,7 @@ package com.example.PDV.SaleCore;
 
 import com.example.PDV.SaleCore.SaleDtos.InfoOfProductsSaleDto;
 import com.example.PDV.SaleCore.SaleDtos.SaleEntryDto;
+import com.example.PDV.SaleCore.SaleDtos.SyncResult;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,20 +14,30 @@ import java.util.List;
 public class SaleController {
 
     private final SaleService saleService;
+    private final ProcessSalesService processSalesService;
 
-    public SaleController(SaleService saleService) {
+    public SaleController(SaleService saleService,
+                          ProcessSalesService processSalesService) {
 
         this.saleService = saleService;
+        this.processSalesService = processSalesService;
     }
 
-    @PostMapping("/make/{id}")
-    public ResponseEntity<String> makeSale(@PathVariable Integer id,
-                                           @RequestBody SaleEntryDto saleEntry) {
+    @PostMapping("/make")
+    public ResponseEntity<String> makeSale(@RequestBody SaleEntryDto saleEntry) {
 
-        saleService.makeSale(saleEntry, id);
+        saleService.makeSale(saleEntry);
         saleService.evictCacheInfosInDataRedisOfProductsSale();
 
         return ResponseEntity.status(HttpStatus.CREATED).body("Venda realizada");
+    }
+
+    @PostMapping("/sync/process")
+    public ResponseEntity<SyncResult> syncProcessSale(@RequestBody List<SaleEntryDto> sales) {
+
+        SyncResult result = processSalesService.processSales(sales);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
     @DeleteMapping("/cancel/{id}")
