@@ -16,6 +16,9 @@ public class SaleEntity {
     @Column(name = "id")
     private Integer id;
 
+    @Column(name = "external_id", unique = true)
+    private String externalId;
+
     @ManyToOne
     @JoinColumn(name = "box_id")
     private BoxEntity box;

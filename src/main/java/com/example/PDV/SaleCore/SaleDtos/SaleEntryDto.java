@@ -2,11 +2,21 @@ package com.example.PDV.SaleCore.SaleDtos;
 
 public class SaleEntryDto {
 
+    private String externalId;
+
     private Integer boxId;
 
     private ItemsForSaleDto items;
 
     private InfoPaymentDto payment;
+
+    public String getExternalId() {
+        return externalId;
+    }
+
+    public void setExternalId(String externalId) {
+        this.externalId = externalId;
+    }
 
     public Integer getBoxId() {
         return boxId;

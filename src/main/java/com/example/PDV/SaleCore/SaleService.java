@@ -32,6 +32,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -81,6 +82,7 @@ public class SaleService {
         this.activityLogsService = activityLogsService;
     }
 
+    @Transactional
     public void makeSale(SaleEntryDto saleEntry, Integer id) {
 
         AgreementEntity agreement = agreementRepository.findById(id)

@@ -19,13 +19,9 @@ public class EmployeeService {
 
     private final EmployeeRepository userRepository;
 
-    private final ActivityLogsService activityLogsService;
-
-    public EmployeeService(EmployeeRepository userRepository,
-                           ActivityLogsService activityLogsService) {
+    public EmployeeService(EmployeeRepository userRepository) {
 
         this.userRepository = userRepository;
-        this.activityLogsService = activityLogsService;
     }
 
     public void createEmployee(EmployeeEntryDto user) {
@@ -37,9 +33,6 @@ public class EmployeeService {
 
         EmployeeEntity newEmployee = new EmployeeEntity(user);
 
-        activityLogsService.createActivityLogs(new ActivityLogsEntryDto(EntityType.EMPLOYEE,
-                newEmployee.getId(), TypeAction.CREATE));
-
 
         userRepository.save(newEmployee);
     }
@@ -50,9 +43,6 @@ public class EmployeeService {
                 .orElseThrow(UserNotFound::new);
 
         user.updateUser(userUpdate);
-
-        activityLogsService.createActivityLogs(new ActivityLogsEntryDto(EntityType.EMPLOYEE,
-                user.getId(), TypeAction.UPDATE));
 
         userRepository.save(user);
     }
@@ -67,8 +57,6 @@ public class EmployeeService {
         EmployeeEntity user = userRepository.findById(id)
                 .orElseThrow(UserNotFound::new);
 
-        activityLogsService.createActivityLogs(new ActivityLogsEntryDto(EntityType.EMPLOYEE,
-                user.getId(), TypeAction.DELETE));
 
         userRepository.delete(user);
     }
