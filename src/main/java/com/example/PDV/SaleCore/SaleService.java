@@ -6,10 +6,7 @@ import com.example.PDV.Agreement.Exceptions.AgreementNotFound;
 import com.example.PDV.BoxCore.BoxEntity;
 import com.example.PDV.BoxCore.BoxRepository;
 import com.example.PDV.BoxCore.BoxService;
-import com.example.PDV.Exceptions.BoxNotFound;
-import com.example.PDV.Exceptions.PriceIsNotEqual;
-import com.example.PDV.Exceptions.ProductNotFound;
-import com.example.PDV.Exceptions.SaleNotFound;
+import com.example.PDV.Exceptions.*;
 import com.example.PDV.LogsCore.ActivityLogsService;
 import com.example.PDV.LogsCore.Dtos.ActivityLogsEntryDto;
 import com.example.PDV.LogsCore.Enums.EntityType;
@@ -36,9 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class SaleService {
@@ -83,9 +78,17 @@ public class SaleService {
     }
 
     @Transactional
-    public void makeSale(SaleEntryDto saleEntry, Integer id) {
+    public void makeSale(SaleEntryDto saleEntry) {
 
-        AgreementEntity agreement = agreementRepository.findById(id)
+        if (saleEntry.getExternalId() == null) {
+            saleEntry.setExternalId(UUID.randomUUID().toString());
+        }
+
+        if (saleRepository.existsByExternalId(saleEntry.getExternalId())) {
+            throw new DuplicateSaleException();
+        }
+
+        AgreementEntity agreement = agreementRepository.findById(saleEntry.getAgreementId())
                 .orElseThrow(AgreementNotFound::new);
 
         BoxEntity box = boxRepository.findById(saleEntry.getBoxId())
@@ -126,7 +129,7 @@ public class SaleService {
         BigDecimal finalValue = valueTotal.add(percentageToBeAdded);
 
         for (Map.Entry<KindOfPayment, ValueAndInstallments> entry : saleEntry.getPayment()
-                        .getInfoPayment().entrySet()) {
+                .getInfoPayment().entrySet()) {
 
             BigDecimal paymentValue = entry.getValue().getValuePayment();
 
@@ -149,8 +152,8 @@ public class SaleService {
                 Installments installments = entry.getValue().getInstallments();
 
                 BigDecimal installmentValue = finalPaymentValue
-                                .divide(new BigDecimal(installments.getQuantity()), 2,
-                                        RoundingMode.HALF_UP);
+                        .divide(new BigDecimal(installments.getQuantity()), 2,
+                                RoundingMode.HALF_UP);
 
                 payment.setInstallment(installments);
                 payment.setInstallment_value(installments.getQuantity() + "x" +
@@ -167,10 +170,7 @@ public class SaleService {
             throw new PriceIsNotEqual();
         }
 
-        activityLogsService.createActivityLogs(new ActivityLogsEntryDto(EntityType.SALE,
-                sale.getId(), TypeAction.SALE));
-
-
+        sale.setExternalId(saleEntry.getExternalId());
         sale.setQuantity(quantity);
         sale.setTotalValueSale(finalValue);
         saleRepository.save(sale);
@@ -185,6 +185,9 @@ public class SaleService {
         itemsForSaleRepository.saveAll(sales);
 
         productService.evichProducts();
+
+        activityLogsService.createActivityLogs(new ActivityLogsEntryDto(EntityType.SALE,
+                sale.getId(), TypeAction.SALE));
 
     }
 
