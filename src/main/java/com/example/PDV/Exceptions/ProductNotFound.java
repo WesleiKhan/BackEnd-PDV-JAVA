@@ -1,6 +1,6 @@
 package com.example.PDV.Exceptions;
 
-public class ProductNotFound extends RuntimeException{
+public class ProductNotFound extends BusinessException{
 
     public ProductNotFound() {super("Produto não foi encontrado!");}
 

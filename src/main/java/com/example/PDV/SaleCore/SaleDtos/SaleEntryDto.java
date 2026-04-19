@@ -6,6 +6,8 @@ public class SaleEntryDto {
 
     private Integer boxId;
 
+    private Integer agreementId;
+
     private ItemsForSaleDto items;
 
     private InfoPaymentDto payment;
@@ -24,6 +26,14 @@ public class SaleEntryDto {
 
     public void setBoxId(Integer boxId) {
         this.boxId = boxId;
+    }
+
+    public Integer getAgreementId() {
+        return agreementId;
+    }
+
+    public void setAgreementId(Integer agreementId) {
+        this.agreementId = agreementId;
     }
 
     public ItemsForSaleDto getItems() {
