@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SaleRepository extends JpaRepository<SaleEntity, Integer> {
+
+    boolean existsByExternalId(String externalId);
 }
