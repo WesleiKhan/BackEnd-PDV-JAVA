@@ -20,11 +20,10 @@ import com.example.PDV.SaleCore.Entities.SaleEntity;
 import com.example.PDV.SaleCore.Repositories.ItemsForSaleRepository;
 import com.example.PDV.SaleCore.Repositories.PaymentOfSaleRepository;
 import com.example.PDV.SaleCore.Repositories.SaleRepository;
-import com.example.PDV.SaleCore.SaleDtos.InfoOfProductsSaleDto;
-import com.example.PDV.SaleCore.SaleDtos.SaleEntryDto;
-import com.example.PDV.SaleCore.SaleDtos.ValueAndInstallments;
+import com.example.PDV.SaleCore.SaleDtos.*;
 import com.example.PDV.SaleCore.SaleEnums.Installments;
 import com.example.PDV.SaleCore.SaleEnums.KindOfPayment;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -96,40 +95,130 @@ public class SaleService {
 
         SaleEntity sale = new SaleEntity(box, agreement);
 
-        List<ItemsForSaleEntity> sales = new ArrayList<>();
+        List<ProductEntity> products = productRepository
+                .findAllById(saleEntry.getItems().getProducts());
 
-        List<PaymentOfSaleEntity> payments = new ArrayList<>();
+        Map<ProductEntity, Integer> productsAndQuantity =
+                createMapProductQuantity(products,
+                        saleEntry.getItems().getProducts());
 
-        BigDecimal valueTotal = BigDecimal.ZERO;
+        CreateItemsForSaleOutDto itemsForSale = createListOfItemsForSale(productsAndQuantity,
+                sale);
 
-        BigDecimal totalPricePayment = BigDecimal.ZERO;
-
-        Integer quantity = 0;
-
-        for (int i = 0; i < saleEntry.getItems().getProducts().size(); i++) {
-
-            ProductEntity product = productRepository.findById(saleEntry.getItems()
-                    .getProducts().get(i)).orElseThrow(ProductNotFound::new);
-
-            ItemsForSaleEntity items = new ItemsForSaleEntity(product, sale);
-
-            valueTotal = valueTotal.add(product.getValue());
-
-            quantity++;
-
-            product.decreaseQuantity(1);
-
-            sales.add(items);
-        }
-
-        BigDecimal percentageToBeAdded = valueTotal
+        BigDecimal percentageToBeAdded = itemsForSale.valueTotal()
                 .multiply(agreement.getPercentage())
                 .divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
 
-        BigDecimal finalValue = valueTotal.add(percentageToBeAdded);
+        BigDecimal finalValue = itemsForSale.valueTotal().add(percentageToBeAdded);
 
-        for (Map.Entry<KindOfPayment, ValueAndInstallments> entry : saleEntry.getPayment()
-                .getInfoPayment().entrySet()) {
+        CreatePaymentSales paymentsSales =
+                createPaymentOfSales(saleEntry.getPayment().getInfoPayment()
+                        , itemsForSale.valueTotal(), percentageToBeAdded,
+                        sale);
+
+
+        if (paymentsSales.totalPrincePayment() == null || finalValue == null
+                || paymentsSales.totalPrincePayment().compareTo(finalValue) != 0) {
+
+            System.out.println("Valor total Payment: " + paymentsSales.totalPrincePayment() +
+                    " valor final:" +
+                    " " + finalValue);
+            throw new PriceIsNotEqual();
+        }
+
+        sale.setExternalId(saleEntry.getExternalId());
+        sale.setQuantity(itemsForSale.quantity());
+        sale.setTotalValueSale(finalValue);
+        saleRepository.save(sale);
+
+        paymentOfSaleRepository.saveAll(paymentsSales.payments());
+
+        box.setTotalValue(finalValue);
+        boxRepository.save(box);
+
+        boxService.evictCacheBoxOpenedForCurrentUser();
+
+        itemsForSaleRepository.saveAll(itemsForSale.sales());
+
+        productService.evichProducts();
+
+        activityLogsService.createActivityLogs(new ActivityLogsEntryDto(EntityType.SALE,
+                sale.getId(), TypeAction.SALE));
+
+    }
+
+    public void cancelSele(Integer saleId) {
+
+        ItemsForSaleEntity sale = itemsForSaleRepository.findById(saleId)
+                .orElseThrow(SaleNotFound::new);
+
+        activityLogsService.createActivityLogs(new ActivityLogsEntryDto(EntityType.SALE,
+                sale.getId(), TypeAction.SALE_CANCEL));
+
+
+        itemsForSaleRepository.delete(sale);
+    }
+
+    public List<ItemsForSaleEntity> createItemsForSale(ProductEntity product,
+                                                SaleEntity sale,
+                                                Integer quantity) {
+
+        List<ItemsForSaleEntity> items = new ArrayList<>();
+
+        for (int i = 0; i < quantity; i++) {
+            ItemsForSaleEntity item = new ItemsForSaleEntity(product, sale);
+
+            items.add(item);
+        }
+
+        return items;
+    }
+
+    private CreateItemsForSaleOutDto createListOfItemsForSale(Map<ProductEntity, Integer> products,
+                                                             SaleEntity sale) {
+
+        List<ItemsForSaleEntity> sales = new ArrayList<>();
+
+        BigDecimal valueTotal = BigDecimal.ZERO;
+
+        Integer quantity = 0;
+
+        for (Map.Entry<ProductEntity, Integer> product : products.entrySet()) {
+
+            List<ItemsForSaleEntity> items = createItemsForSale(product.getKey(),
+                    sale, product.getValue());
+
+            Integer quantityProduct = product.getValue();
+
+            BigDecimal valueFinalProduct = product.getKey().getValue()
+                    .multiply(new BigDecimal(quantityProduct));
+
+            valueTotal = valueTotal.add(valueFinalProduct);
+
+            quantity += quantityProduct;
+
+            if(!product.getKey().decreaseQuantity(quantityProduct))
+                throw new RuntimeException("Quantidade de Invalida.");
+
+            sales.addAll(items);
+        }
+
+        return new CreateItemsForSaleOutDto(sales, valueTotal, quantity);
+    }
+
+    private CreatePaymentSales createPaymentOfSales(Map<KindOfPayment,
+                                                            ValueAndInstallments> paymentsOfSales,
+                                                    BigDecimal valueTotal,
+                                                    BigDecimal percentageToBeAdded,
+                                                    SaleEntity sale) {
+
+        List<PaymentOfSaleEntity> payments = new ArrayList<>();
+
+        BigDecimal totalPricePayment = BigDecimal.ZERO;
+
+        for (Map.Entry<KindOfPayment, ValueAndInstallments> entry :
+                paymentsOfSales.entrySet()
+                ) {
 
             BigDecimal paymentValue = entry.getValue().getValuePayment();
 
@@ -163,45 +252,38 @@ public class SaleService {
             payments.add(payment);
         }
 
-        if (totalPricePayment == null || finalValue == null
-                || totalPricePayment.compareTo(finalValue) != 0) {
+        return new CreatePaymentSales(payments, totalPricePayment);
+    }
 
-            System.out.println("Valor total Payment: " + totalPricePayment + " valor final: " + finalValue);
-            throw new PriceIsNotEqual();
+    private Map<ProductEntity, Integer> createMapProductQuantity(List<ProductEntity> products,
+                                                                 List<Integer> ids) {
+
+        Map<Integer, ProductEntity> idAndProduct = new HashMap<>();
+
+        Map<ProductEntity, Integer> productsAndQuantity = new HashMap<>();
+
+        for (ProductEntity product : products) {
+
+            idAndProduct.put(product.getId(), product);
+
         }
 
-        sale.setExternalId(saleEntry.getExternalId());
-        sale.setQuantity(quantity);
-        sale.setTotalValueSale(finalValue);
-        saleRepository.save(sale);
+        for (Integer id : ids) {
 
-        paymentOfSaleRepository.saveAll(payments);
+            ProductEntity product = idAndProduct.get(id);
 
-        box.setTotalValue(finalValue);
-        boxRepository.save(box);
+            if (product == null) {
+                throw  new ProductNotFound();
+            }
 
-        boxService.evictCacheBoxOpenedForCurrentUser();
+            productsAndQuantity.merge(product, 1, Integer::sum);
 
-        itemsForSaleRepository.saveAll(sales);
+        }
 
-        productService.evichProducts();
 
-        activityLogsService.createActivityLogs(new ActivityLogsEntryDto(EntityType.SALE,
-                sale.getId(), TypeAction.SALE));
-
+        return productsAndQuantity;
     }
 
-    public void cancelSele(Integer saleId) {
-
-        ItemsForSaleEntity sale = itemsForSaleRepository.findById(saleId)
-                .orElseThrow(SaleNotFound::new);
-
-        activityLogsService.createActivityLogs(new ActivityLogsEntryDto(EntityType.SALE,
-                sale.getId(), TypeAction.SALE_CANCEL));
-
-
-        itemsForSaleRepository.delete(sale);
-    }
 
     @CachePut(
             value = "Info_Of_Products_Sale",
