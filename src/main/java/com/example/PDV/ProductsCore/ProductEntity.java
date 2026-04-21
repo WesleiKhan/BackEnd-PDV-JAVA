@@ -60,9 +60,18 @@ public class ProductEntity {
         this.quantity = quantity;
     }
 
-    public void decreaseQuantity(Integer value) {
-        if (this.quantity != null && value != null) {
+    public boolean decreaseQuantity(Integer value) {
+
+        if (this.quantity == null && this.quantity <= 0) {
+            return false;
+
+        }else if ((this.quantity = this.quantity - value) <= 0) {
+            return false;
+
+        }else {
             this.quantity = this.quantity - value;
+
+            return true;
         }
     }
 
