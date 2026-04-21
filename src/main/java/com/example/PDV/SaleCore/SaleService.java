@@ -23,7 +23,6 @@ import com.example.PDV.SaleCore.Repositories.SaleRepository;
 import com.example.PDV.SaleCore.SaleDtos.*;
 import com.example.PDV.SaleCore.SaleEnums.Installments;
 import com.example.PDV.SaleCore.SaleEnums.KindOfPayment;
-import jakarta.persistence.criteria.CriteriaBuilder;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -95,8 +94,14 @@ public class SaleService {
 
         SaleEntity sale = new SaleEntity(box, agreement);
 
+        Set<Integer> uniqueIds = new HashSet<>(saleEntry.getItems().getProducts());
+
         List<ProductEntity> products = productRepository
-                .findAllById(saleEntry.getItems().getProducts());
+                .findAllById(uniqueIds);
+
+        if (products.size() != uniqueIds.size()) {
+            throw  new ProductNotFound();
+        }
 
         Map<ProductEntity, Integer> productsAndQuantity =
                 createMapProductQuantity(products,
