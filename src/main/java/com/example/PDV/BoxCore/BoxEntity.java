@@ -23,7 +23,7 @@ public class BoxEntity {
     private LocalDateTime endDate;
 
     @Column(name = "total_value", precision = 10, scale = 2)
-    private BigDecimal totalValue;
+    private BigDecimal totalValue = BigDecimal.ZERO;
 
     @ManyToOne
     @JoinColumn(name = "operator_id")
@@ -36,7 +36,6 @@ public class BoxEntity {
     public void prePersist() {
 
         this.startDate = LocalDateTime.now();
-        this.totalValue = new BigDecimal(0);
     }
 
     public BoxEntity() {}
