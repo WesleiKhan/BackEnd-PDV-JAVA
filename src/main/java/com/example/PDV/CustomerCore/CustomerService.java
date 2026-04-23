@@ -32,10 +32,10 @@ public class CustomerService {
 
         newCustomer.endRegister(entry);
 
+        customerRepository.save(newCustomer);
+
         activityLogsService.createActivityLogs(new ActivityLogsEntryDto(EntityType.CUSTOMER,
                 newCustomer.getId(), TypeAction.CREATE));
-
-        customerRepository.save(newCustomer);
     }
 
     public List<CustomerOutDto> getCustomers() {
@@ -60,11 +60,10 @@ public class CustomerService {
 
         customer.updateCustomer(entry);
 
+        customerRepository.save(customer);
+
         activityLogsService.createActivityLogs(new ActivityLogsEntryDto(EntityType.CUSTOMER,
                 customer.getId(), TypeAction.UPDATE));
-
-
-        customerRepository.save(customer);
 
     }
 
@@ -73,10 +72,9 @@ public class CustomerService {
         CustomerEntity customer = customerRepository.findById(id)
                 .orElseThrow(UserNotFound::new);
 
+        customerRepository.delete(customer);
+
         activityLogsService.createActivityLogs(new ActivityLogsEntryDto(EntityType.CUSTOMER,
                 customer.getId(), TypeAction.DELETE));
-
-
-        customerRepository.delete(customer);
     }
 }
