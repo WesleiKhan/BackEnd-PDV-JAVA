@@ -57,6 +57,10 @@ public class AgreementEntity {
         return id;
     }
 
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
     public CustomerEntity getCustomer() {
         return customer;
     }
