@@ -41,6 +41,10 @@ public class ActivityLogsService {
                                      EntityType entity,
                                      TypeAction action) {
 
+        if (action == null) {
+            throw new IllegalArgumentException("Action não pode ser null");
+        }
+
         switch (action) {
             case TypeAction.CREATE -> {
                 return String.format("O Operador De Caixa: %s, Realizou a " +
