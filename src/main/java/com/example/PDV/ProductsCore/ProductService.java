@@ -31,10 +31,10 @@ public class ProductService {
 
         ProductEntity newProduct = new ProductEntity(entry);
 
+        productRepository.save(newProduct);
+
         activityLogsService.createActivityLogs(new ActivityLogsEntryDto(EntityType.PRODUCT,
                 newProduct.getId(), TypeAction.CREATE));
-
-        productRepository.save(newProduct);
     }
 
     @Cacheable(
@@ -62,11 +62,10 @@ public class ProductService {
 
         newProduct.updateProduct(entry);
 
+        productRepository.save(newProduct);
+
         activityLogsService.createActivityLogs(new ActivityLogsEntryDto(EntityType.PRODUCT,
                 newProduct.getId(), TypeAction.UPDATE));
-
-
-        productRepository.save(newProduct);
     }
 
     public void deleteProduct(Integer productId) {
@@ -74,11 +73,10 @@ public class ProductService {
         ProductEntity product = productRepository.findById(productId)
                         .orElseThrow(ProductNotFound::new);
 
+        productRepository.delete(product);
+
         activityLogsService.createActivityLogs(new ActivityLogsEntryDto(EntityType.PRODUCT,
                 product.getId(), TypeAction.DELETE));
-
-
-        productRepository.delete(product);
     }
 
     @CacheEvict(
