@@ -78,7 +78,7 @@ public class SaleService {
     @Transactional
     public void makeSale(SaleEntryDto saleEntry) {
 
-        if (saleEntry.getExternalId() == null) {
+        if (saleEntry.getExternalId() == null || saleEntry.getExternalId().trim().isEmpty()) {
             saleEntry.setExternalId(UUID.randomUUID().toString());
         }
 
@@ -157,11 +157,10 @@ public class SaleService {
         ItemsForSaleEntity sale = itemsForSaleRepository.findById(saleId)
                 .orElseThrow(SaleNotFound::new);
 
+        itemsForSaleRepository.delete(sale);
+
         activityLogsService.createActivityLogs(new ActivityLogsEntryDto(EntityType.SALE,
                 sale.getId(), TypeAction.SALE_CANCEL));
-
-
-        itemsForSaleRepository.delete(sale);
     }
 
     public List<ItemsForSaleEntity> createItemsForSale(ProductEntity product,
@@ -284,7 +283,6 @@ public class SaleService {
             productsAndQuantity.merge(product, 1, Integer::sum);
 
         }
-
 
         return productsAndQuantity;
     }
