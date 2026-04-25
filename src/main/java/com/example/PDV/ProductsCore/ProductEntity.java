@@ -62,17 +62,17 @@ public class ProductEntity {
 
     public boolean decreaseQuantity(Integer value) {
 
-        if (this.quantity == null && this.quantity <= 0) {
+        if (this.quantity == null || this.quantity <= 0) {
             return false;
-
-        }else if ((this.quantity = this.quantity - value) <= 0) {
-            return false;
-
-        }else {
-            this.quantity = this.quantity - value;
-
-            return true;
         }
+
+        int newQuantity = this.quantity - value;
+
+        if (newQuantity < 0) return false;
+
+        this.quantity = newQuantity;
+        return true;
+
     }
 
     public BigDecimal getValue() {
